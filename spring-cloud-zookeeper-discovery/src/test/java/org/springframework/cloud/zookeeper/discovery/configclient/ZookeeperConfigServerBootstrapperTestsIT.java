@@ -60,88 +60,88 @@ import static org.mockserver.model.HttpResponse.response;
  */
 @Testcontainers
 class ZookeeperConfigServerBootstrapperTestsIT {
-	private static final int ZOOKEEPER_PORT = 2181;
+    private static final int ZOOKEEPER_PORT = 2181;
 
-	public static final DockerImageName MOCKSERVER_IMAGE = DockerImageName.parse("mockserver/mockserver")
-			.withTag("mockserver-" + MockServerClient.class.getPackage().getImplementationVersion());
+    public static final DockerImageName MOCKSERVER_IMAGE = DockerImageName.parse("mockserver/mockserver")
+            .withTag("mockserver-" + MockServerClient.class.getPackage().getImplementationVersion());
 
-	@Container
-	private static final GenericContainer<?> zookeeper = new GenericContainer<>("zookeeper:3.8.0")
-			.withExposedPorts(ZOOKEEPER_PORT);
+    @Container
+    private static final GenericContainer<?> zookeeper = new GenericContainer<>("zookeeper:3.8.0")
+            .withExposedPorts(ZOOKEEPER_PORT);
 
-	@Container
-	static MockServerContainer mockServer = new MockServerContainer(MOCKSERVER_IMAGE);
+    @Container
+    static MockServerContainer mockServer = new MockServerContainer(MOCKSERVER_IMAGE);
 
-	private ConfigurableApplicationContext context;
+    private ConfigurableApplicationContext context;
 
-	private ServiceDiscovery<ZookeeperInstance> serviceDiscovery;
+    private ServiceDiscovery<ZookeeperInstance> serviceDiscovery;
 
-	private CuratorFramework curatorFramework;
+    private CuratorFramework curatorFramework;
 
-	@BeforeEach
-	void before() {
-		curatorFramework = CuratorFrameworkFactory.builder().connectString(zookeeper.getHost() + ":" + zookeeper.getMappedPort(ZOOKEEPER_PORT))
-				.retryPolicy(new RetryOneTime(100)).build();
+    @BeforeEach
+    void before() {
+        curatorFramework = CuratorFrameworkFactory.builder().connectString(zookeeper.getHost() + ":" + zookeeper.getMappedPort(ZOOKEEPER_PORT))
+                .retryPolicy(new RetryOneTime(100)).build();
 
-		try {
-			curatorFramework.start();
-			serviceDiscovery = ServiceDiscoveryBuilder.builder(ZookeeperInstance.class).client(curatorFramework).basePath("/services")
-					.build();
-			serviceDiscovery.start();
-			serviceDiscovery.registerService(ServiceInstanceRegistration.builder().id("zookeeper-configserver").name("zookeeper-configserver")
-					.address(mockServer.getHost()).port(mockServer.getServerPort()).uriSpec(ZookeeperDiscoveryProperties.DEFAULT_URI_SPEC).build().getServiceInstance());
-		}
-		catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
+        try {
+            curatorFramework.start();
+            serviceDiscovery = ServiceDiscoveryBuilder.builder(ZookeeperInstance.class).client(curatorFramework).basePath("/services")
+                    .build();
+            serviceDiscovery.start();
+            serviceDiscovery.registerService(ServiceInstanceRegistration.builder().id("zookeeper-configserver").name("zookeeper-configserver")
+                    .address(mockServer.getHost()).port(mockServer.getServerPort()).uriSpec(ZookeeperDiscoveryProperties.DEFAULT_URI_SPEC).build().getServiceInstance());
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-	@AfterEach
-	void after() throws IOException {
-		this.context.close();
-		this.serviceDiscovery.close();
-		this.curatorFramework.close();
-	}
+    @AfterEach
+    void after() throws IOException {
+        this.context.close();
+        this.serviceDiscovery.close();
+        this.curatorFramework.close();
+    }
 
-	@Test
-	public void contextLoads() throws JsonProcessingException {
-		Environment environment = new Environment("test", "default");
-		Map<String, Object> properties = new HashMap<>();
-		properties.put("hello", "world");
-		PropertySource p = new PropertySource("p1", properties);
-		environment.add(p);
-		ObjectMapper objectMapper = new ObjectMapper();
-		try (MockServerClient mockServerClient = new MockServerClient(mockServer.getHost(),
-				mockServer.getMappedPort(MockServerContainer.PORT))) {
-			mockServerClient.when(request().withPath("/application/default"))
-					.respond(response().withBody(objectMapper.writeValueAsString(environment))
-							.withHeader("content-type", "application/json"));
-			this.context = setup().run();
-			assertThat(this.context.getEnvironment().getProperty("hello")).isEqualTo("world");
-		}
+    @Test
+    public void contextLoads() throws JsonProcessingException {
+        Environment environment = new Environment("test", "default");
+        Map<String, Object> properties = new HashMap<>();
+        properties.put("hello", "world");
+        PropertySource p = new PropertySource("p1", properties);
+        environment.add(p);
+        ObjectMapper objectMapper = new ObjectMapper();
+        try (MockServerClient mockServerClient = new MockServerClient(mockServer.getHost(),
+                mockServer.getMappedPort(MockServerContainer.PORT))) {
+            mockServerClient.when(request().withPath("/application/default"))
+                    .respond(response().withBody(objectMapper.writeValueAsString(environment))
+                            .withHeader("content-type", "application/json"));
+            this.context = setup().run();
+            assertThat(this.context.getEnvironment().getProperty("hello")).isEqualTo("world");
+        }
 
-	}
+    }
 
-	SpringApplicationBuilder setup(String... env) {
-		return new SpringApplicationBuilder(TestConfig.class)
-				.properties(addDefaultEnv(env));
-	}
+    SpringApplicationBuilder setup(String... env) {
+        return new SpringApplicationBuilder(TestConfig.class)
+                .properties(addDefaultEnv(env));
+    }
 
-	private String[] addDefaultEnv(String[] env) {
-		Set<String> set = new LinkedHashSet<>();
-		if (env != null && env.length > 0) {
-			set.addAll(Arrays.asList(env));
-		}
-		set.add("spring.config.import=classpath:bootstrapper.yaml");
-		set.add("spring.cloud.config.enabled=true");
-		set.add("spring.cloud.service-registry.auto-registration.enabled=false");
-		set.add(ZookeeperProperties.PREFIX + ".connectString=" + zookeeper.getHost() + ":" + zookeeper.getMappedPort(ZOOKEEPER_PORT));
-		return set.toArray(new String[0]);
-	}
+    private String[] addDefaultEnv(String[] env) {
+        Set<String> set = new LinkedHashSet<>();
+        if (env != null && env.length > 0) {
+            set.addAll(Arrays.asList(env));
+        }
+        set.add("spring.config.import=classpath:bootstrapper.yaml");
+        set.add("spring.cloud.config.enabled=true");
+        set.add("spring.cloud.service-registry.auto-registration.enabled=false");
+        set.add(ZookeeperProperties.PREFIX + ".connectString=" + zookeeper.getHost() + ":" + zookeeper.getMappedPort(ZOOKEEPER_PORT));
+        return set.toArray(new String[0]);
+    }
 
-	@SpringBootConfiguration
-	@EnableAutoConfiguration
-	static class TestConfig {
+    @SpringBootConfiguration
+    @EnableAutoConfiguration
+    static class TestConfig {
 
-	}
+    }
 }

@@ -29,7 +29,7 @@ import org.springframework.context.annotation.Conditional;
  * @author Marcin Grzejszczak
  * @since 1.0.0
  */
-@Target({ ElementType.TYPE, ElementType.METHOD })
+@Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Conditional(DependenciesNotPassedCondition.class)
 public @interface ConditionalOnDependenciesNotPassed {

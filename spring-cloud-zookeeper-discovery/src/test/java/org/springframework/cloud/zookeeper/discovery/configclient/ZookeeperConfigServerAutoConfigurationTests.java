@@ -35,42 +35,42 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class ZookeeperConfigServerAutoConfigurationTests {
 
-	private ConfigurableApplicationContext context;
+    private ConfigurableApplicationContext context;
 
-	@After
-	public void close() {
-		if (this.context != null) {
-			this.context.close();
-		}
-	}
+    @After
+    public void close() {
+        if (this.context != null) {
+            this.context.close();
+        }
+    }
 
-	@Test
-	public void offByDefault() {
-		this.context = new AnnotationConfigApplicationContext(
-				ZookeeperConfigServerAutoConfiguration.class);
-		assertThat(this.context
-				.getBeanNamesForType(ZookeeperDiscoveryProperties.class).length)
-				.isEqualTo(0);
-	}
+    @Test
+    public void offByDefault() {
+        this.context = new AnnotationConfigApplicationContext(
+                ZookeeperConfigServerAutoConfiguration.class);
+        assertThat(this.context
+                .getBeanNamesForType(ZookeeperDiscoveryProperties.class).length)
+                .isEqualTo(0);
+    }
 
-	@Test
-	public void onWhenRequested() {
-		setup("spring.cloud.config.server.prefix=/config");
-		assertThat(this.context
-				.getBeanNamesForType(ZookeeperDiscoveryProperties.class).length)
-				.isEqualTo(1);
-		ZookeeperDiscoveryProperties properties = this.context
-				.getBean(ZookeeperDiscoveryProperties.class);
-		assertThat(properties.getMetadata()).containsEntry("configPath", "/config");
-	}
+    @Test
+    public void onWhenRequested() {
+        setup("spring.cloud.config.server.prefix=/config");
+        assertThat(this.context
+                .getBeanNamesForType(ZookeeperDiscoveryProperties.class).length)
+                .isEqualTo(1);
+        ZookeeperDiscoveryProperties properties = this.context
+                .getBean(ZookeeperDiscoveryProperties.class);
+        assertThat(properties.getMetadata()).containsEntry("configPath", "/config");
+    }
 
-	private void setup(String... env) {
-		this.context = new SpringApplicationBuilder(
-				PropertyPlaceholderAutoConfiguration.class,
-				ZookeeperConfigServerAutoConfiguration.class,
-				ConfigServerProperties.class, ZookeeperDiscoveryProperties.class)
-				.listeners(new ZookeeperTestingServer())
-						.web(WebApplicationType.NONE).properties(env).run();
-	}
+    private void setup(String... env) {
+        this.context = new SpringApplicationBuilder(
+                PropertyPlaceholderAutoConfiguration.class,
+                ZookeeperConfigServerAutoConfiguration.class,
+                ConfigServerProperties.class, ZookeeperDiscoveryProperties.class)
+                .listeners(new ZookeeperTestingServer())
+                .web(WebApplicationType.NONE).properties(env).run();
+    }
 
 }

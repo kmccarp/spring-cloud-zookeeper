@@ -43,33 +43,33 @@ import org.springframework.context.annotation.Configuration;
 @ConditionalOnProperty(value = "spring.cloud.service-registry.enabled", matchIfMissing = true)
 @AutoConfigureBefore(ServiceRegistryAutoConfiguration.class)
 public class ZookeeperServiceRegistryAutoConfiguration
-		implements ApplicationContextAware {
+        implements ApplicationContextAware {
 
-	private ApplicationContext context;
+    private ApplicationContext context;
 
-	@Override
-	public void setApplicationContext(ApplicationContext context) throws BeansException {
-		this.context = context;
-	}
+    @Override
+    public void setApplicationContext(ApplicationContext context) throws BeansException {
+        this.context = context;
+    }
 
-	@Bean
-	@ConditionalOnBean(ServiceDiscovery.class)
-	@SuppressWarnings("unchecked")
-	public ZookeeperServiceRegistry zookeeperServiceRegistry() {
-		return new ZookeeperServiceRegistry(this.context.getBean(ServiceDiscovery.class));
-	}
+    @Bean
+    @ConditionalOnBean(ServiceDiscovery.class)
+    @SuppressWarnings("unchecked")
+    public ZookeeperServiceRegistry zookeeperServiceRegistry() {
+        return new ZookeeperServiceRegistry(this.context.getBean(ServiceDiscovery.class));
+    }
 
-	@Bean
-	@ConditionalOnMissingBean
-	public InstanceSerializer<ZookeeperInstance> instanceSerializer() {
-		return new JsonInstanceSerializer<>(ZookeeperInstance.class);
-	}
+    @Bean
+    @ConditionalOnMissingBean
+    public InstanceSerializer<ZookeeperInstance> instanceSerializer() {
+        return new JsonInstanceSerializer<>(ZookeeperInstance.class);
+    }
 
-	@Bean
-	@ConditionalOnMissingBean
-	public ZookeeperDiscoveryProperties zookeeperDiscoveryProperties(
-			InetUtils inetUtils) {
-		return new ZookeeperDiscoveryProperties(inetUtils);
-	}
+    @Bean
+    @ConditionalOnMissingBean
+    public ZookeeperDiscoveryProperties zookeeperDiscoveryProperties(
+            InetUtils inetUtils) {
+        return new ZookeeperDiscoveryProperties(inetUtils);
+    }
 
 }

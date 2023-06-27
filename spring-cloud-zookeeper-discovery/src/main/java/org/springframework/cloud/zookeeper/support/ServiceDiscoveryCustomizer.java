@@ -26,7 +26,7 @@ import org.springframework.cloud.zookeeper.discovery.ZookeeperInstance;
  */
 public interface ServiceDiscoveryCustomizer {
 
-	ServiceDiscovery<ZookeeperInstance> customize(
-			ServiceDiscoveryBuilder<ZookeeperInstance> builder);
+    ServiceDiscovery<ZookeeperInstance> customize(
+            ServiceDiscoveryBuilder<ZookeeperInstance> builder);
 
 }

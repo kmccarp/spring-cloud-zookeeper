@@ -31,15 +31,15 @@ import org.apache.curator.x.discovery.ServiceInstance;
  */
 public class LogMissingDependencyChecker implements PresenceChecker {
 
-	private static final Log log = LogFactory.getLog(LogMissingDependencyChecker.class);
+    private static final Log log = LogFactory.getLog(LogMissingDependencyChecker.class);
 
-	@Override
-	public void checkPresence(String dependencyName,
-			List<ServiceInstance<?>> serviceInstances) {
-		if (serviceInstances.isEmpty()) {
-			log.warn("Microservice dependency with name [" + dependencyName
-					+ "] is missing.");
-		}
-	}
+    @Override
+    public void checkPresence(String dependencyName,
+                                             List<ServiceInstance<?>> serviceInstances) {
+        if (serviceInstances.isEmpty()) {
+            log.warn("Microservice dependency with name [" + dependencyName
+                    + "] is missing.");
+        }
+    }
 
 }

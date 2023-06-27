@@ -33,198 +33,198 @@ import org.springframework.util.StringUtils;
 @ConfigurationProperties(ZookeeperDiscoveryProperties.PREFIX)
 public class ZookeeperDiscoveryProperties {
 
-	/**
-	 * Zookeeper Discovery Properties prefix.
-	 */
-	public static final String PREFIX = "spring.cloud.zookeeper.discovery";
+    /**
+     * Zookeeper Discovery Properties prefix.
+     */
+    public static final String PREFIX = "spring.cloud.zookeeper.discovery";
 
-	/**
-	 * Default URI spec.
-	 */
-	public static final String DEFAULT_URI_SPEC = "{scheme}://{address}:{port}";
+    /**
+     * Default URI spec.
+     */
+    public static final String DEFAULT_URI_SPEC = "{scheme}://{address}:{port}";
 
-	private InetUtils.HostInfo hostInfo;
+    private InetUtils.HostInfo hostInfo;
 
-	private boolean enabled = true;
+    private boolean enabled = true;
 
-	/**
-	 * Root Zookeeper folder in which all instances are registered.
-	 */
-	private String root = "/services";
+    /**
+     * Root Zookeeper folder in which all instances are registered.
+     */
+    private String root = "/services";
 
-	/**
-	 * The URI specification to resolve during service registration in Zookeeper.
-	 */
-	private String uriSpec = DEFAULT_URI_SPEC;
+    /**
+     * The URI specification to resolve during service registration in Zookeeper.
+     */
+    private String uriSpec = DEFAULT_URI_SPEC;
 
-	/** Id used to register with zookeeper. Defaults to a random UUID. */
-	private String instanceId;
+    /** Id used to register with zookeeper. Defaults to a random UUID. */
+    private String instanceId;
 
-	/**
-	 * Predefined host with which a service can register itself in Zookeeper. Corresponds
-	 * to the {code address} from the URI spec.
-	 */
-	private String instanceHost;
+    /**
+     * Predefined host with which a service can register itself in Zookeeper. Corresponds
+     * to the {code address} from the URI spec.
+     */
+    private String instanceHost;
 
-	/**
-	 * IP address to use when accessing service (must also set preferIpAddress to use).
-	 */
-	private String instanceIpAddress;
+    /**
+     * IP address to use when accessing service (must also set preferIpAddress to use).
+     */
+    private String instanceIpAddress;
 
-	/**
-	 * Use ip address rather than hostname during registration.
-	 */
-	private boolean preferIpAddress = false;
+    /**
+     * Use ip address rather than hostname during registration.
+     */
+    private boolean preferIpAddress = false;
 
-	/** Port to register the service under (defaults to listening port). */
-	private Integer instancePort;
+    /** Port to register the service under (defaults to listening port). */
+    private Integer instancePort;
 
-	/** Ssl port of the registered service. */
-	private Integer instanceSslPort;
+    /** Ssl port of the registered service. */
+    private Integer instanceSslPort;
 
-	/**
-	 * Register as a service in zookeeper.
-	 */
-	private boolean register = true;
+    /**
+     * Register as a service in zookeeper.
+     */
+    private boolean register = true;
 
-	/**
-	 * Gets the metadata name/value pairs associated with this instance. This information
-	 * is sent to zookeeper and can be used by other instances.
-	 */
-	private Map<String, String> metadata = new HashMap<>();
+    /**
+     * Gets the metadata name/value pairs associated with this instance. This information
+     * is sent to zookeeper and can be used by other instances.
+     */
+    private Map<String, String> metadata = new HashMap<>();
 
-	/**
-	 * The initial status of this instance (defaults to
-	 * {@link StatusConstants#STATUS_UP}).
-	 */
-	private String initialStatus = StatusConstants.STATUS_UP;
+    /**
+     * The initial status of this instance (defaults to
+     * {@link StatusConstants#STATUS_UP}).
+     */
+    private String initialStatus = StatusConstants.STATUS_UP;
 
-	/**
-	 * Order of the discovery client used by `CompositeDiscoveryClient` for sorting
-	 * available clients.
-	 */
-	private int order = 0;
+    /**
+     * Order of the discovery client used by `CompositeDiscoveryClient` for sorting
+     * available clients.
+     */
+    private int order = 0;
 
-	// Visible for Testing
-	protected ZookeeperDiscoveryProperties() {
-	}
+    // Visible for Testing
+    protected ZookeeperDiscoveryProperties() {
+    }
 
-	public ZookeeperDiscoveryProperties(InetUtils inetUtils) {
-		this.hostInfo = inetUtils.findFirstNonLoopbackHostInfo();
-		this.instanceHost = this.hostInfo.getHostname();
-		this.instanceIpAddress = this.hostInfo.getIpAddress();
-	}
+    public ZookeeperDiscoveryProperties(InetUtils inetUtils) {
+        this.hostInfo = inetUtils.findFirstNonLoopbackHostInfo();
+        this.instanceHost = this.hostInfo.getHostname();
+        this.instanceIpAddress = this.hostInfo.getIpAddress();
+    }
 
-	public boolean isEnabled() {
-		return this.enabled;
-	}
+    public boolean isEnabled() {
+        return this.enabled;
+    }
 
-	public String getRoot() {
-		return this.root;
-	}
+    public String getRoot() {
+        return this.root;
+    }
 
-	public String getUriSpec() {
-		return this.uriSpec;
-	}
+    public String getUriSpec() {
+        return this.uriSpec;
+    }
 
-	public String getInstanceHost() {
-		if (this.preferIpAddress && StringUtils.hasText(this.instanceIpAddress)) {
-			return this.instanceIpAddress;
-		}
-		return this.instanceHost;
-	}
+    public String getInstanceHost() {
+        if (this.preferIpAddress && StringUtils.hasText(this.instanceIpAddress)) {
+            return this.instanceIpAddress;
+        }
+        return this.instanceHost;
+    }
 
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
-	}
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
 
-	public void setRoot(String root) {
-		this.root = DependencyPathUtils.sanitize(root);
-	}
+    public void setRoot(String root) {
+        this.root = DependencyPathUtils.sanitize(root);
+    }
 
-	public void setUriSpec(String uriSpec) {
-		this.uriSpec = uriSpec;
-	}
+    public void setUriSpec(String uriSpec) {
+        this.uriSpec = uriSpec;
+    }
 
-	public String getInstanceId() {
-		return this.instanceId;
-	}
+    public String getInstanceId() {
+        return this.instanceId;
+    }
 
-	public void setInstanceId(String instanceId) {
-		this.instanceId = instanceId;
-	}
+    public void setInstanceId(String instanceId) {
+        this.instanceId = instanceId;
+    }
 
-	public void setInstanceHost(String instanceHost) {
-		this.instanceHost = instanceHost;
-		this.hostInfo.override = true;
-	}
+    public void setInstanceHost(String instanceHost) {
+        this.instanceHost = instanceHost;
+        this.hostInfo.override = true;
+    }
 
-	public void setInstanceIpAddress(String instanceIpAddress) {
-		this.instanceIpAddress = instanceIpAddress;
-		this.hostInfo.override = true;
-	}
+    public void setInstanceIpAddress(String instanceIpAddress) {
+        this.instanceIpAddress = instanceIpAddress;
+        this.hostInfo.override = true;
+    }
 
-	public void setPreferIpAddress(boolean preferIpAddress) {
-		this.preferIpAddress = preferIpAddress;
-	}
+    public void setPreferIpAddress(boolean preferIpAddress) {
+        this.preferIpAddress = preferIpAddress;
+    }
 
-	public Map<String, String> getMetadata() {
-		return this.metadata;
-	}
+    public Map<String, String> getMetadata() {
+        return this.metadata;
+    }
 
-	public void setMetadata(Map<String, String> metadata) {
-		this.metadata = metadata;
-	}
+    public void setMetadata(Map<String, String> metadata) {
+        this.metadata = metadata;
+    }
 
-	public boolean isRegister() {
-		return this.register;
-	}
+    public boolean isRegister() {
+        return this.register;
+    }
 
-	public void setRegister(boolean register) {
-		this.register = register;
-	}
+    public void setRegister(boolean register) {
+        this.register = register;
+    }
 
-	public Integer getInstancePort() {
-		return this.instancePort;
-	}
+    public Integer getInstancePort() {
+        return this.instancePort;
+    }
 
-	public void setInstancePort(Integer instancePort) {
-		this.instancePort = instancePort;
-	}
+    public void setInstancePort(Integer instancePort) {
+        this.instancePort = instancePort;
+    }
 
-	public Integer getInstanceSslPort() {
-		return this.instanceSslPort;
-	}
+    public Integer getInstanceSslPort() {
+        return this.instanceSslPort;
+    }
 
-	public void setInstanceSslPort(Integer instanceSslPort) {
-		this.instanceSslPort = instanceSslPort;
-	}
+    public void setInstanceSslPort(Integer instanceSslPort) {
+        this.instanceSslPort = instanceSslPort;
+    }
 
-	public String getInitialStatus() {
-		return this.initialStatus;
-	}
+    public String getInitialStatus() {
+        return this.initialStatus;
+    }
 
-	public void setInitialStatus(String initialStatus) {
-		this.initialStatus = initialStatus;
-	}
+    public void setInitialStatus(String initialStatus) {
+        this.initialStatus = initialStatus;
+    }
 
-	public int getOrder() {
-		return this.order;
-	}
+    public int getOrder() {
+        return this.order;
+    }
 
-	public void setOrder(int order) {
-		this.order = order;
-	}
+    public void setOrder(int order) {
+        this.order = order;
+    }
 
-	@Override
-	public String toString() {
-		return "ZookeeperDiscoveryProperties{" + "enabled=" + this.enabled + ", root='"
-				+ this.root + '\'' + ", uriSpec='" + this.uriSpec + '\''
-				+ ", instanceId='" + this.instanceId + '\'' + ", instanceHost='"
-				+ this.instanceHost + '\'' + ", instancePort='" + this.instancePort + '\''
-				+ ", instanceSslPort='" + this.instanceSslPort + '\'' + ", metadata="
-				+ this.metadata + ", register=" + this.register + ", initialStatus="
-				+ this.initialStatus + ", order=" + this.order + '}';
-	}
+    @Override
+    public String toString() {
+        return "ZookeeperDiscoveryProperties{" + "enabled=" + this.enabled + ", root='"
+                + this.root + '\'' + ", uriSpec='" + this.uriSpec + '\''
+                + ", instanceId='" + this.instanceId + '\'' + ", instanceHost='"
+                + this.instanceHost + '\'' + ", instancePort='" + this.instancePort + '\''
+                + ", instanceSslPort='" + this.instanceSslPort + '\'' + ", metadata="
+                + this.metadata + ", register=" + this.register + ", initialStatus="
+                + this.initialStatus + ", order=" + this.order + '}';
+    }
 
 }

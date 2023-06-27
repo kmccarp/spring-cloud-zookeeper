@@ -37,52 +37,52 @@ import static org.springframework.cloud.zookeeper.support.StatusConstants.STATUS
  */
 public class ZookeeperServiceInstanceListSupplier implements ServiceInstanceListSupplier {
 
-	private final ServiceInstanceListSupplier delegate;
-	private final String serviceId;
+    private final ServiceInstanceListSupplier delegate;
+    private final String serviceId;
 
-	public ZookeeperServiceInstanceListSupplier(ServiceInstanceListSupplier delegate,
-			ZookeeperDependencies zookeeperDependencies) {
-		this.delegate = delegate;
-		this.serviceId = getServiceIdFromDepsOrClientName(delegate
-				.getServiceId(), zookeeperDependencies);
-	}
+    public ZookeeperServiceInstanceListSupplier(ServiceInstanceListSupplier delegate,
+                                                 ZookeeperDependencies zookeeperDependencies) {
+        this.delegate = delegate;
+        this.serviceId = getServiceIdFromDepsOrClientName(delegate
+                .getServiceId(), zookeeperDependencies);
+    }
 
-	private String getServiceIdFromDepsOrClientName(String delegateServiceId,
-			ZookeeperDependencies zookeeperDependencies) {
-		String serviceIdFromDeps = zookeeperDependencies
-				.getPathForAlias(delegateServiceId);
-		return StringUtils.hasText(serviceIdFromDeps) ? serviceIdFromDeps
-				: delegateServiceId;
-	}
+    private String getServiceIdFromDepsOrClientName(String delegateServiceId,
+                                                     ZookeeperDependencies zookeeperDependencies) {
+        String serviceIdFromDeps = zookeeperDependencies
+                .getPathForAlias(delegateServiceId);
+        return StringUtils.hasText(serviceIdFromDeps) ? serviceIdFromDeps
+                : delegateServiceId;
+    }
 
-	@Override
-	public String getServiceId() {
-		return serviceId;
-	}
+    @Override
+    public String getServiceId() {
+        return serviceId;
+    }
 
-	@Override
-	public Flux<List<ServiceInstance>> get() {
-		return delegate.get().map(this::filteredByZookeeperStatusUp);
-	}
+    @Override
+    public Flux<List<ServiceInstance>> get() {
+        return delegate.get().map(this::filteredByZookeeperStatusUp);
+    }
 
-	private List<ServiceInstance> filteredByZookeeperStatusUp(List<ServiceInstance> serviceInstances) {
-		ArrayList<ServiceInstance> filteredInstances = new ArrayList<>();
-		for (ServiceInstance serviceInstance : serviceInstances) {
-			if (serviceInstance instanceof ZookeeperServiceInstance) {
-				org.apache.curator.x.discovery.ServiceInstance<ZookeeperInstance> zookeeperServiceInstance = ((ZookeeperServiceInstance) serviceInstance)
-						.getServiceInstance();
-				String instanceStatus = null;
-				if (zookeeperServiceInstance.getPayload() != null
-						&& zookeeperServiceInstance.getPayload().getMetadata() != null) {
-					instanceStatus = zookeeperServiceInstance.getPayload().getMetadata()
-							.get(INSTANCE_STATUS_KEY);
-				}
-				if (!StringUtils.hasText(instanceStatus) // backwards compatibility
-						|| instanceStatus.equalsIgnoreCase(STATUS_UP)) {
-					filteredInstances.add(serviceInstance);
-				}
-			}
-		}
-		return filteredInstances;
-	}
+    private List<ServiceInstance> filteredByZookeeperStatusUp(List<ServiceInstance> serviceInstances) {
+        ArrayList<ServiceInstance> filteredInstances = new ArrayList<>();
+        for (ServiceInstance serviceInstance : serviceInstances) {
+            if (serviceInstance instanceof ZookeeperServiceInstance) {
+                org.apache.curator.x.discovery.ServiceInstance<ZookeeperInstance> zookeeperServiceInstance = ((ZookeeperServiceInstance)serviceInstance)
+                        .getServiceInstance();
+                String instanceStatus = null;
+                if (zookeeperServiceInstance.getPayload() != null
+                        && zookeeperServiceInstance.getPayload().getMetadata() != null) {
+                    instanceStatus = zookeeperServiceInstance.getPayload().getMetadata()
+                            .get(INSTANCE_STATUS_KEY);
+                }
+                if (!StringUtils.hasText(instanceStatus) // backwards compatibility
+                        || instanceStatus.equalsIgnoreCase(STATUS_UP)) {
+                    filteredInstances.add(serviceInstance);
+                }
+            }
+        }
+        return filteredInstances;
+    }
 }

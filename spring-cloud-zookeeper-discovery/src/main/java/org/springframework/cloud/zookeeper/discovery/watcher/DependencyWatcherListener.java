@@ -26,11 +26,11 @@ package org.springframework.cloud.zookeeper.discovery.watcher;
  */
 public interface DependencyWatcherListener {
 
-	/**
-	 * Method executed upon state change of a dependency.
-	 * @param dependencyName - alias from microservice configuration
-	 * @param newState - new state of the dependency
-	 */
-	void stateChanged(String dependencyName, DependencyState newState);
+    /**
+     * Method executed upon state change of a dependency.
+     * @param dependencyName - alias from microservice configuration
+     * @param newState - new state of the dependency
+     */
+    void stateChanged(String dependencyName, DependencyState newState);
 
 }

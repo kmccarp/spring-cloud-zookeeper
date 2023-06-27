@@ -39,63 +39,63 @@ import org.springframework.util.ReflectionUtils;
  * @since 1.0.0
  */
 public class ZookeeperServiceWatch
-		implements ApplicationListener<InstanceRegisteredEvent<?>>, TreeCacheListener,
-		ApplicationEventPublisherAware {
+        implements ApplicationListener<InstanceRegisteredEvent<?>>, TreeCacheListener,
+        ApplicationEventPublisherAware {
 
-	private final CuratorFramework curator;
+    private final CuratorFramework curator;
 
-	private final ZookeeperDiscoveryProperties properties;
+    private final ZookeeperDiscoveryProperties properties;
 
-	private final AtomicLong cacheChange = new AtomicLong(0);
+    private final AtomicLong cacheChange = new AtomicLong(0);
 
-	private ApplicationEventPublisher publisher;
+    private ApplicationEventPublisher publisher;
 
-	private TreeCache cache;
+    private TreeCache cache;
 
-	public ZookeeperServiceWatch(CuratorFramework curator,
-			ZookeeperDiscoveryProperties properties) {
-		this.curator = curator;
-		this.properties = properties;
-	}
+    public ZookeeperServiceWatch(CuratorFramework curator,
+                                  ZookeeperDiscoveryProperties properties) {
+        this.curator = curator;
+        this.properties = properties;
+    }
 
-	@Override
-	public void setApplicationEventPublisher(ApplicationEventPublisher publisher) {
-		this.publisher = publisher;
-	}
+    @Override
+    public void setApplicationEventPublisher(ApplicationEventPublisher publisher) {
+        this.publisher = publisher;
+    }
 
-	public TreeCache getCache() {
-		return this.cache;
-	}
+    public TreeCache getCache() {
+        return this.cache;
+    }
 
-	@Override
-	public void onApplicationEvent(InstanceRegisteredEvent<?> event) {
-		this.cache = TreeCache.newBuilder(this.curator, this.properties.getRoot())
-				.build();
-		this.cache.getListenable().addListener(this);
-		try {
-			this.cache.start();
-		}
-		catch (Exception e) {
-			ReflectionUtils.rethrowRuntimeException(e);
-		}
-	}
+    @Override
+    public void onApplicationEvent(InstanceRegisteredEvent<?> event) {
+        this.cache = TreeCache.newBuilder(this.curator, this.properties.getRoot())
+                .build();
+        this.cache.getListenable().addListener(this);
+        try {
+            this.cache.start();
+        }
+        catch (Exception e) {
+            ReflectionUtils.rethrowRuntimeException(e);
+        }
+    }
 
-	@PreDestroy
-	public void stop() throws Exception {
-		if (this.cache != null) {
-			this.cache.close();
-		}
-	}
+    @PreDestroy
+    public void stop() throws Exception {
+        if (this.cache != null) {
+            this.cache.close();
+        }
+    }
 
-	@Override
-	public void childEvent(CuratorFramework client, TreeCacheEvent event)
-			throws Exception {
-		if (event.getType().equals(TreeCacheEvent.Type.NODE_ADDED)
-				|| event.getType().equals(TreeCacheEvent.Type.NODE_REMOVED)
-				|| event.getType().equals(TreeCacheEvent.Type.NODE_UPDATED)) {
-			long newCacheChange = this.cacheChange.incrementAndGet();
-			this.publisher.publishEvent(new HeartbeatEvent(this, newCacheChange));
-		}
-	}
+    @Override
+    public void childEvent(CuratorFramework client, TreeCacheEvent event)
+            throws Exception {
+        if (event.getType().equals(TreeCacheEvent.Type.NODE_ADDED)
+                || event.getType().equals(TreeCacheEvent.Type.NODE_REMOVED)
+                || event.getType().equals(TreeCacheEvent.Type.NODE_UPDATED)) {
+            long newCacheChange = this.cacheChange.incrementAndGet();
+            this.publisher.publishEvent(new HeartbeatEvent(this, newCacheChange));
+        }
+    }
 
 }

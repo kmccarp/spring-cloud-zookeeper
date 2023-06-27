@@ -48,83 +48,83 @@ import static org.assertj.core.api.BDDAssertions.then;
  */
 public class ZookeeprDiscoveryNonWebAppTests {
 
-	TestingServer server;
+    TestingServer server;
 
-	String connectionString;
+    String connectionString;
 
-	@Before
-	public void setup() throws Exception {
-		this.server = new TestingServer(TestSocketUtils.findAvailableTcpPort());
-		this.connectionString = "--spring.cloud.zookeeper.connectString="
-				+ this.server.getConnectString();
-	}
+    @Before
+    public void setup() throws Exception {
+        this.server = new TestingServer(TestSocketUtils.findAvailableTcpPort());
+        this.connectionString = "--spring.cloud.zookeeper.connectString="
+                + this.server.getConnectString();
+    }
 
-	@After
-	public void cleanup() throws Exception {
-		this.server.close();
-	}
+    @After
+    public void cleanup() throws Exception {
+        this.server.close();
+    }
 
-	@Test
-	public void should_work_when_using_web_client_without_the_web_environment() {
-		SpringApplication producerApp = new SpringApplicationBuilder(HelloProducer.class)
-				.web(WebApplicationType.SERVLET).build();
-		SpringApplication clientApplication = new SpringApplicationBuilder(
-				HelloClient.class).web(WebApplicationType.NONE).build();
+    @Test
+    public void should_work_when_using_web_client_without_the_web_environment() {
+        SpringApplication producerApp = new SpringApplicationBuilder(HelloProducer.class)
+                .web(WebApplicationType.SERVLET).build();
+        SpringApplication clientApplication = new SpringApplicationBuilder(
+                HelloClient.class).web(WebApplicationType.NONE).build();
 
-		try (ConfigurableApplicationContext producerContext = producerApp.run(
-				this.connectionString, "--server.port=0",
-				"--spring.application.name=hello-world", "--debug")) {
-			try (ConfigurableApplicationContext context = clientApplication.run(
-					this.connectionString,
-					"--spring.cloud.zookeeper.discovery.register=false")) {
-				Awaitility.await().until(new Runnable() {
-					@Override
-					public void run() {
-						try {
-							HelloClient bean = context.getBean(HelloClient.class);
-							then(bean.discoveryClient.getServices()).isNotEmpty();
-							then(bean.discoveryClient.getInstances("hello-world"))
-									.isNotEmpty();
-							String string = bean.restTemplate
-									.getForObject("http://hello-world/", String.class);
-							then(string).isEqualTo("foo");
-						}
-						catch (IllegalStateException e) {
-							throw new AssertionError(e);
-						}
-					}
-				});
-			}
-		}
-	}
+        try (ConfigurableApplicationContext producerContext = producerApp.run(
+                this.connectionString, "--server.port=0",
+                "--spring.application.name=hello-world", "--debug")) {
+            try (ConfigurableApplicationContext context = clientApplication.run(
+                    this.connectionString,
+                    "--spring.cloud.zookeeper.discovery.register=false")) {
+                Awaitility.await().until(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            HelloClient bean = context.getBean(HelloClient.class);
+                            then(bean.discoveryClient.getServices()).isNotEmpty();
+                            then(bean.discoveryClient.getInstances("hello-world"))
+                                    .isNotEmpty();
+                            String string = bean.restTemplate
+                                    .getForObject("http://hello-world/", String.class);
+                            then(string).isEqualTo("foo");
+                        }
+                        catch (IllegalStateException e) {
+                            throw new AssertionError(e);
+                        }
+                    }
+                });
+            }
+        }
+    }
 
-	@EnableAutoConfiguration(exclude = { JmxAutoConfiguration.class })
-	@Configuration
-	static class HelloClient {
+    @EnableAutoConfiguration(exclude = {JmxAutoConfiguration.class})
+    @Configuration
+    static class HelloClient {
 
-		@LoadBalanced
-		@Bean
-		RestTemplate restTemplate() {
-			this.restTemplate = new RestTemplateBuilder().build();
-			return this.restTemplate;
-		}
+        @LoadBalanced
+        @Bean
+        RestTemplate restTemplate() {
+            this.restTemplate = new RestTemplateBuilder().build();
+            return this.restTemplate;
+        }
 
-		@Autowired
-		DiscoveryClient discoveryClient;
+        @Autowired
+        DiscoveryClient discoveryClient;
 
-		RestTemplate restTemplate;
+        RestTemplate restTemplate;
 
-	}
+    }
 
-	@EnableAutoConfiguration(exclude = { JmxAutoConfiguration.class })
-	@RestController
-	static class HelloProducer {
+    @EnableAutoConfiguration(exclude = {JmxAutoConfiguration.class})
+    @RestController
+    static class HelloProducer {
 
-		@RequestMapping("/")
-		public String foo() {
-			return "foo";
-		}
+        @RequestMapping("/")
+        public String foo() {
+            return "foo";
+        }
 
-	}
+    }
 
 }

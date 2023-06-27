@@ -36,39 +36,39 @@ import org.springframework.util.StringUtils;
  * @since 1.0.0
  */
 public class DependencyEnvironmentPostProcessor
-		implements EnvironmentPostProcessor, Ordered {
+        implements EnvironmentPostProcessor, Ordered {
 
-	// after ConfigFileEnvironmentPostProcessorr
-	private int order = BootstrapConfigFileApplicationListener.DEFAULT_ORDER + 1;
+    // after ConfigFileEnvironmentPostProcessorr
+    private int order = BootstrapConfigFileApplicationListener.DEFAULT_ORDER + 1;
 
-	@Override
-	public int getOrder() {
-		return this.order;
-	}
+    @Override
+    public int getOrder() {
+        return this.order;
+    }
 
-	@Override
-	public void postProcessEnvironment(ConfigurableEnvironment environment,
-			SpringApplication application) {
-		String appName = environment.getProperty("spring.application.name");
-		if (StringUtils.hasText(appName) && !appName.contains("/")) {
-			String prefix = environment.getProperty("spring.cloud.zookeeper.prefix");
-			if (StringUtils.hasText(prefix)) {
-				StringBuilder prefixedName = new StringBuilder();
-				if (!prefix.startsWith("/")) {
-					prefixedName.append("/");
-				}
-				prefixedName.append(prefix);
-				if (!prefix.endsWith("/")) {
-					prefixedName.append("/");
-				}
-				prefixedName.append(appName);
-				MapPropertySource propertySource = new MapPropertySource(
-						"zookeeperDependencyEnvironment",
-						Collections.singletonMap("spring.application.name",
-								(Object) prefixedName.toString()));
-				environment.getPropertySources().addFirst(propertySource);
-			}
-		}
-	}
+    @Override
+    public void postProcessEnvironment(ConfigurableEnvironment environment,
+                                                      SpringApplication application) {
+        String appName = environment.getProperty("spring.application.name");
+        if (StringUtils.hasText(appName) && !appName.contains("/")) {
+            String prefix = environment.getProperty("spring.cloud.zookeeper.prefix");
+            if (StringUtils.hasText(prefix)) {
+                StringBuilder prefixedName = new StringBuilder();
+                if (!prefix.startsWith("/")) {
+                    prefixedName.append("/");
+                }
+                prefixedName.append(prefix);
+                if (!prefix.endsWith("/")) {
+                    prefixedName.append("/");
+                }
+                prefixedName.append(appName);
+                MapPropertySource propertySource = new MapPropertySource(
+                        "zookeeperDependencyEnvironment",
+                        Collections.singletonMap("spring.application.name",
+                                (Object)prefixedName.toString()));
+                environment.getPropertySources().addFirst(propertySource);
+            }
+        }
+    }
 
 }

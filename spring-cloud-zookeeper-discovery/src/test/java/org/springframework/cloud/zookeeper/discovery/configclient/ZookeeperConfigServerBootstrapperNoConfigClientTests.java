@@ -30,36 +30,36 @@ import org.springframework.cloud.test.TestSocketUtils;
 import org.springframework.context.ConfigurableApplicationContext;
 
 @RunWith(ModifiedClassPathRunner.class)
-@ClassPathExclusions({ "spring-cloud-config-client-*.jar", "spring-cloud-config-server-*.jar" })
+@ClassPathExclusions({"spring-cloud-config-client-*.jar", "spring-cloud-config-server-*.jar"})
 public class ZookeeperConfigServerBootstrapperNoConfigClientTests {
 
-	@Test
-	public void contextLoads() throws Exception {
-		TestingServer testingServer = null;
-		ConfigurableApplicationContext context = null;
-		try {
-			TomcatURLStreamHandlerFactory.disable();
-			int port = TestSocketUtils.findAvailableTcpPort();
-			testingServer = new TestingServer(port);
-			context = new SpringApplicationBuilder(TestConfig.class).properties("--server.port=0",
-					"spring.cloud.config.discovery.enabled=true", "spring.cloud.zookeeper.connect-string=localhost:" + port,
-							"spring.cloud.service-registry.auto-registration.enabled=false")
-					.run();
-		}
-		finally {
-			if (context != null) {
-				context.close();
-			}
-			if (testingServer != null) {
-				testingServer.close();
-			}
-		}
-	}
+    @Test
+    public void contextLoads() throws Exception {
+        TestingServer testingServer = null;
+        ConfigurableApplicationContext context = null;
+        try {
+            TomcatURLStreamHandlerFactory.disable();
+            int port = TestSocketUtils.findAvailableTcpPort();
+            testingServer = new TestingServer(port);
+            context = new SpringApplicationBuilder(TestConfig.class).properties("--server.port=0",
+                    "spring.cloud.config.discovery.enabled=true", "spring.cloud.zookeeper.connect-string=localhost:" + port,
+                    "spring.cloud.service-registry.auto-registration.enabled=false")
+                    .run();
+        }
+        finally {
+            if (context != null) {
+                context.close();
+            }
+            if (testingServer != null) {
+                testingServer.close();
+            }
+        }
+    }
 
-	@SpringBootConfiguration
-	@EnableAutoConfiguration
-	static class TestConfig {
+    @SpringBootConfiguration
+    @EnableAutoConfiguration
+    static class TestConfig {
 
-	}
+    }
 
 }

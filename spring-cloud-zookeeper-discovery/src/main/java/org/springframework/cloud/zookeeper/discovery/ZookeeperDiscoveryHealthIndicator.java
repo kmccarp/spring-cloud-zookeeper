@@ -35,47 +35,47 @@ import org.springframework.cloud.zookeeper.discovery.dependency.ZookeeperDepende
  */
 public class ZookeeperDiscoveryHealthIndicator implements DiscoveryHealthIndicator {
 
-	private static final Log log = LogFactory
-			.getLog(ZookeeperDiscoveryHealthIndicator.class);
+    private static final Log log = LogFactory
+            .getLog(ZookeeperDiscoveryHealthIndicator.class);
 
-	private CuratorFramework curatorFramework;
+    private CuratorFramework curatorFramework;
 
-	private ServiceDiscovery<ZookeeperInstance> serviceDiscovery;
+    private ServiceDiscovery<ZookeeperInstance> serviceDiscovery;
 
-	private final ZookeeperDependencies zookeeperDependencies;
+    private final ZookeeperDependencies zookeeperDependencies;
 
-	private final ZookeeperDiscoveryProperties zookeeperDiscoveryProperties;
+    private final ZookeeperDiscoveryProperties zookeeperDiscoveryProperties;
 
-	public ZookeeperDiscoveryHealthIndicator(CuratorFramework curatorFramework,
-			ServiceDiscovery<ZookeeperInstance> serviceDiscovery,
-			ZookeeperDependencies zookeeperDependencies,
-			ZookeeperDiscoveryProperties zookeeperDiscoveryProperties) {
-		this.curatorFramework = curatorFramework;
-		this.serviceDiscovery = serviceDiscovery;
-		this.zookeeperDependencies = zookeeperDependencies;
-		this.zookeeperDiscoveryProperties = zookeeperDiscoveryProperties;
-	}
+    public ZookeeperDiscoveryHealthIndicator(CuratorFramework curatorFramework,
+                                              ServiceDiscovery<ZookeeperInstance> serviceDiscovery,
+                                              ZookeeperDependencies zookeeperDependencies,
+                                              ZookeeperDiscoveryProperties zookeeperDiscoveryProperties) {
+        this.curatorFramework = curatorFramework;
+        this.serviceDiscovery = serviceDiscovery;
+        this.zookeeperDependencies = zookeeperDependencies;
+        this.zookeeperDiscoveryProperties = zookeeperDiscoveryProperties;
+    }
 
-	@Override
-	public String getName() {
-		return "zookeeper";
-	}
+    @Override
+    public String getName() {
+        return "zookeeper";
+    }
 
-	@Override
-	public Health health() {
-		Health.Builder builder = Health.unknown();
-		try {
-			Iterable<ServiceInstance<ZookeeperInstance>> allInstances = new ZookeeperServiceInstances(
-					this.curatorFramework, this.serviceDiscovery,
-					this.zookeeperDependencies, this.zookeeperDiscoveryProperties);
-			builder.up().withDetail("services", allInstances);
-		}
-		catch (Exception e) {
-			log.error("Error", e);
-			builder.down(e);
-		}
+    @Override
+    public Health health() {
+        Health.Builder builder = Health.unknown();
+        try {
+            Iterable<ServiceInstance<ZookeeperInstance>> allInstances = new ZookeeperServiceInstances(
+                    this.curatorFramework, this.serviceDiscovery,
+                    this.zookeeperDependencies, this.zookeeperDiscoveryProperties);
+            builder.up().withDetail("services", allInstances);
+        }
+        catch (Exception e) {
+            log.error("Error", e);
+            builder.down(e);
+        }
 
-		return builder.build();
-	}
+        return builder.build();
+    }
 
 }

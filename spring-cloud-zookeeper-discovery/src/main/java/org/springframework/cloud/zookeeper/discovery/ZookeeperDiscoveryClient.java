@@ -43,109 +43,109 @@ import static org.springframework.util.ReflectionUtils.rethrowRuntimeException;
  */
 public class ZookeeperDiscoveryClient implements DiscoveryClient {
 
-	private static final Log log = LogFactory.getLog(ZookeeperDiscoveryClient.class);
+    private static final Log log = LogFactory.getLog(ZookeeperDiscoveryClient.class);
 
-	private final ZookeeperDependencies zookeeperDependencies;
+    private final ZookeeperDependencies zookeeperDependencies;
 
-	private final ServiceDiscovery<ZookeeperInstance> serviceDiscovery;
+    private final ServiceDiscovery<ZookeeperInstance> serviceDiscovery;
 
-	private final ZookeeperDiscoveryProperties zookeeperDiscoveryProperties;
+    private final ZookeeperDiscoveryProperties zookeeperDiscoveryProperties;
 
-	public ZookeeperDiscoveryClient(ServiceDiscovery<ZookeeperInstance> serviceDiscovery,
-			ZookeeperDependencies zookeeperDependencies,
-			ZookeeperDiscoveryProperties zookeeperDiscoveryProperties) {
-		this.serviceDiscovery = serviceDiscovery;
-		this.zookeeperDependencies = zookeeperDependencies;
-		this.zookeeperDiscoveryProperties = zookeeperDiscoveryProperties;
-	}
+    public ZookeeperDiscoveryClient(ServiceDiscovery<ZookeeperInstance> serviceDiscovery,
+                                     ZookeeperDependencies zookeeperDependencies,
+                                     ZookeeperDiscoveryProperties zookeeperDiscoveryProperties) {
+        this.serviceDiscovery = serviceDiscovery;
+        this.zookeeperDependencies = zookeeperDependencies;
+        this.zookeeperDiscoveryProperties = zookeeperDiscoveryProperties;
+    }
 
-	@Override
-	public String description() {
-		return "Spring Cloud Zookeeper Discovery Client";
-	}
+    @Override
+    public String description() {
+        return "Spring Cloud Zookeeper Discovery Client";
+    }
 
-	private static org.springframework.cloud.client.ServiceInstance createServiceInstance(
-			String serviceId, ServiceInstance<ZookeeperInstance> serviceInstance) {
-		return new ZookeeperServiceInstance(serviceId, serviceInstance);
-	}
+    private static org.springframework.cloud.client.ServiceInstance createServiceInstance(
+            String serviceId, ServiceInstance<ZookeeperInstance> serviceInstance) {
+        return new ZookeeperServiceInstance(serviceId, serviceInstance);
+    }
 
-	@Override
-	public List<org.springframework.cloud.client.ServiceInstance> getInstances(
-			final String serviceId) {
-		try {
-			if (getServiceDiscovery() == null) {
-				return Collections.EMPTY_LIST;
-			}
-			String serviceIdToQuery = getServiceIdToQuery(serviceId);
-			Collection<ServiceInstance<ZookeeperInstance>> zkInstances = getServiceDiscovery()
-					.queryForInstances(serviceIdToQuery);
-			List<org.springframework.cloud.client.ServiceInstance> instances = new ArrayList<>();
-			for (ServiceInstance<ZookeeperInstance> instance : zkInstances) {
-				instances.add(createServiceInstance(serviceIdToQuery, instance));
-			}
-			return instances;
-		}
-		catch (KeeperException.NoNodeException e) {
-			if (log.isDebugEnabled()) {
-				log.debug(
-						"Error getting instances from zookeeper. Possibly, no service has registered.",
-						e);
-			}
-			// this means that nothing has registered as a service yes
-			return Collections.emptyList();
-		}
-		catch (Exception exception) {
-			rethrowRuntimeException(exception);
-		}
-		return new ArrayList<>();
-	}
+    @Override
+    public List<org.springframework.cloud.client.ServiceInstance> getInstances(
+            final String serviceId) {
+        try {
+            if (getServiceDiscovery() == null) {
+                return Collections.EMPTY_LIST;
+            }
+            String serviceIdToQuery = getServiceIdToQuery(serviceId);
+            Collection<ServiceInstance<ZookeeperInstance>> zkInstances = getServiceDiscovery()
+                    .queryForInstances(serviceIdToQuery);
+            List<org.springframework.cloud.client.ServiceInstance> instances = new ArrayList<>();
+            for (ServiceInstance<ZookeeperInstance> instance : zkInstances) {
+                instances.add(createServiceInstance(serviceIdToQuery, instance));
+            }
+            return instances;
+        }
+        catch (KeeperException.NoNodeException e) {
+            if (log.isDebugEnabled()) {
+                log.debug(
+                        "Error getting instances from zookeeper. Possibly, no service has registered.",
+                        e);
+            }
+            // this means that nothing has registered as a service yes
+            return Collections.emptyList();
+        }
+        catch (Exception exception) {
+            rethrowRuntimeException(exception);
+        }
+        return new ArrayList<>();
+    }
 
-	private ServiceDiscovery<ZookeeperInstance> getServiceDiscovery() {
-		return this.serviceDiscovery;
-	}
+    private ServiceDiscovery<ZookeeperInstance> getServiceDiscovery() {
+        return this.serviceDiscovery;
+    }
 
-	private String getServiceIdToQuery(String serviceId) {
-		if (this.zookeeperDependencies != null
-				&& this.zookeeperDependencies.hasDependencies()) {
-			String pathForAlias = this.zookeeperDependencies.getPathForAlias(serviceId);
-			return pathForAlias.isEmpty() ? serviceId : pathForAlias;
-		}
-		return serviceId;
-	}
+    private String getServiceIdToQuery(String serviceId) {
+        if (this.zookeeperDependencies != null
+                && this.zookeeperDependencies.hasDependencies()) {
+            String pathForAlias = this.zookeeperDependencies.getPathForAlias(serviceId);
+            return pathForAlias.isEmpty() ? serviceId : pathForAlias;
+        }
+        return serviceId;
+    }
 
-	@Override
-	public List<String> getServices() {
-		List<String> services = null;
-		if (getServiceDiscovery() == null) {
-			log.warn(
-					"Service Discovery is not yet ready - returning empty list of services");
-			return Collections.emptyList();
-		}
-		try {
-			Collection<String> names = getServiceDiscovery().queryForNames();
-			if (names == null) {
-				return Collections.emptyList();
-			}
-			services = new ArrayList<>(names);
-		}
-		catch (KeeperException.NoNodeException e) {
-			if (log.isDebugEnabled()) {
-				log.debug(
-						"Error getting services from zookeeper. Possibly, no service has registered.",
-						e);
-			}
-			// this means that nothing has registered as a service yes
-			return Collections.emptyList();
-		}
-		catch (Exception e) {
-			rethrowRuntimeException(e);
-		}
-		return services;
-	}
+    @Override
+    public List<String> getServices() {
+        List<String> services = null;
+        if (getServiceDiscovery() == null) {
+            log.warn(
+                    "Service Discovery is not yet ready - returning empty list of services");
+            return Collections.emptyList();
+        }
+        try {
+            Collection<String> names = getServiceDiscovery().queryForNames();
+            if (names == null) {
+                return Collections.emptyList();
+            }
+            services = new ArrayList<>(names);
+        }
+        catch (KeeperException.NoNodeException e) {
+            if (log.isDebugEnabled()) {
+                log.debug(
+                        "Error getting services from zookeeper. Possibly, no service has registered.",
+                        e);
+            }
+            // this means that nothing has registered as a service yes
+            return Collections.emptyList();
+        }
+        catch (Exception e) {
+            rethrowRuntimeException(e);
+        }
+        return services;
+    }
 
-	@Override
-	public int getOrder() {
-		return this.zookeeperDiscoveryProperties.getOrder();
-	}
+    @Override
+    public int getOrder() {
+        return this.zookeeperDiscoveryProperties.getOrder();
+    }
 
 }

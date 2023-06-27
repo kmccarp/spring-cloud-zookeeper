@@ -23,24 +23,24 @@ import org.springframework.cloud.zookeeper.discovery.ZookeeperInstance;
  */
 public final class StatusConstants {
 
-	private StatusConstants() {
-	}
+    private StatusConstants() {
+    }
 
-	/**
-	 * Key to the
-	 * {@link ZookeeperInstance#getMetadata()}
-	 * map.
-	 */
-	public static final String INSTANCE_STATUS_KEY = "instance_status";
+    /**
+     * Key to the
+     * {@link ZookeeperInstance#getMetadata()}
+     * map.
+     */
+    public static final String INSTANCE_STATUS_KEY = "instance_status";
 
-	/**
-	 * UP value for {@link StatusConstants#INSTANCE_STATUS_KEY} key.
-	 */
-	public static final String STATUS_UP = "UP";
+    /**
+     * UP value for {@link StatusConstants#INSTANCE_STATUS_KEY} key.
+     */
+    public static final String STATUS_UP = "UP";
 
-	/**
-	 * OUT_OF_SERVICE value for {@link StatusConstants#INSTANCE_STATUS_KEY} key.
-	 */
-	public static final String STATUS_OUT_OF_SERVICE = "OUT_OF_SERVICE";
+    /**
+     * OUT_OF_SERVICE value for {@link StatusConstants#INSTANCE_STATUS_KEY} key.
+     */
+    public static final String STATUS_OUT_OF_SERVICE = "OUT_OF_SERVICE";
 
 }

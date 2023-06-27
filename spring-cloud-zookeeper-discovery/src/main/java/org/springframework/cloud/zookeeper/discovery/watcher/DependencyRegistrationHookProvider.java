@@ -27,16 +27,16 @@ import java.io.IOException;
  */
 public interface DependencyRegistrationHookProvider {
 
-	/**
-	 * Register hooks upon dependencies registration.
-	 * @throws Exception if registration fails.
-	 */
-	void registerDependencyRegistrationHooks() throws Exception;
+    /**
+     * Register hooks upon dependencies registration.
+     * @throws Exception if registration fails.
+     */
+    void registerDependencyRegistrationHooks() throws Exception;
 
-	/**
-	 * Unregister hooks upon dependencies registration.
-	 * @throws IOException if clearing fails.
-	 */
-	void clearDependencyRegistrationHooks() throws IOException;
+    /**
+     * Unregister hooks upon dependencies registration.
+     * @throws IOException if clearing fails.
+     */
+    void clearDependencyRegistrationHooks() throws IOException;
 
 }

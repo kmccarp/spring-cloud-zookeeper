@@ -40,24 +40,24 @@ import org.springframework.core.env.Environment;
 @Configuration(proxyBeanMethods = false)
 public class ZookeeperLoadBalancerConfiguration {
 
-	@Bean
-	@ConditionalOnBean(DiscoveryClient.class)
-	@ConditionalOnMissingBean
-	public ServiceInstanceListSupplier zookeeperDiscoveryClientServiceInstanceListSupplier(
-			DiscoveryClient discoveryClient, Environment env,
-			ApplicationContext context,
-			ZookeeperDependencies zookeeperDependencies) {
-		DiscoveryClientServiceInstanceListSupplier firstDelegate = new DiscoveryClientServiceInstanceListSupplier(
-				discoveryClient, env);
-		ZookeeperServiceInstanceListSupplier secondDelegate = new ZookeeperServiceInstanceListSupplier(firstDelegate,
-				zookeeperDependencies);
-		ObjectProvider<LoadBalancerCacheManager> cacheManagerProvider = context
-				.getBeanProvider(LoadBalancerCacheManager.class);
-		if (cacheManagerProvider.getIfAvailable() != null) {
-			return new CachingServiceInstanceListSupplier(secondDelegate,
-					cacheManagerProvider.getIfAvailable());
-		}
-		return secondDelegate;
-	}
+    @Bean
+    @ConditionalOnBean(DiscoveryClient.class)
+    @ConditionalOnMissingBean
+    public ServiceInstanceListSupplier zookeeperDiscoveryClientServiceInstanceListSupplier(
+            DiscoveryClient discoveryClient, Environment env,
+            ApplicationContext context,
+            ZookeeperDependencies zookeeperDependencies) {
+        DiscoveryClientServiceInstanceListSupplier firstDelegate = new DiscoveryClientServiceInstanceListSupplier(
+                discoveryClient, env);
+        ZookeeperServiceInstanceListSupplier secondDelegate = new ZookeeperServiceInstanceListSupplier(firstDelegate,
+                zookeeperDependencies);
+        ObjectProvider<LoadBalancerCacheManager> cacheManagerProvider = context
+                .getBeanProvider(LoadBalancerCacheManager.class);
+        if (cacheManagerProvider.getIfAvailable() != null) {
+            return new CachingServiceInstanceListSupplier(secondDelegate,
+                    cacheManagerProvider.getIfAvailable());
+        }
+        return secondDelegate;
+    }
 
 }

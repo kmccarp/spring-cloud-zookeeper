@@ -36,28 +36,28 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
  * @author Spencer Gibb
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = RANDOM_PORT, properties = { "management.health.zookeeper.enabled=false",
-		"spring.cloud.service-registry.auto-registration.enabled=false" })
+@SpringBootTest(webEnvironment = RANDOM_PORT, properties = {"management.health.zookeeper.enabled=false",
+        "spring.cloud.service-registry.auto-registration.enabled=false"})
 @ContextConfiguration(loader = ZookeeperTestingServer.Loader.class)
 public class ZookeeperDiscoveryHealthIndicatorDisabledTests {
 
-	@Autowired(required = false)
-	private ZookeeperDiscoveryHealthIndicator healthIndicator;
+    @Autowired(required = false)
+    private ZookeeperDiscoveryHealthIndicator healthIndicator;
 
-	// Issue: #101 - ZookeeperDiscoveryHealthIndicator should be able to be disabled with
-	// a property
-	@Test
-	public void healthIndicatorDisabled() {
-		// when:
-		// then:
-		then(this.healthIndicator).isNull();
-	}
+    // Issue: #101 - ZookeeperDiscoveryHealthIndicator should be able to be disabled with
+    // a property
+    @Test
+    public void healthIndicatorDisabled() {
+        // when:
+        // then:
+        then(this.healthIndicator).isNull();
+    }
 
-	@SpringBootConfiguration
-	@EnableAutoConfiguration
-	@Import(CommonTestConfig.class)
-	static class Config {
+    @SpringBootConfiguration
+    @EnableAutoConfiguration
+    @Import(CommonTestConfig.class)
+    static class Config {
 
-	}
+    }
 
 }

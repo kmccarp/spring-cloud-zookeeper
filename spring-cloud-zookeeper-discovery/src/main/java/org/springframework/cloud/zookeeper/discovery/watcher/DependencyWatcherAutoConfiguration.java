@@ -50,24 +50,24 @@ import org.springframework.context.annotation.Configuration;
 @AutoConfigureAfter(ZookeeperDependenciesAutoConfiguration.class)
 public class DependencyWatcherAutoConfiguration {
 
-	@Autowired(required = false)
-	private List<DependencyWatcherListener> dependencyWatcherListeners = new ArrayList<>();
+    @Autowired(required = false)
+    private List<DependencyWatcherListener> dependencyWatcherListeners = new ArrayList<>();
 
-	@Bean
-	@ConditionalOnMissingBean
-	public DependencyPresenceOnStartupVerifier dependencyPresenceOnStartupVerifier() {
-		return new DefaultDependencyPresenceOnStartupVerifier();
-	}
+    @Bean
+    @ConditionalOnMissingBean
+    public DependencyPresenceOnStartupVerifier dependencyPresenceOnStartupVerifier() {
+        return new DefaultDependencyPresenceOnStartupVerifier();
+    }
 
-	@Bean(destroyMethod = "clearDependencyRegistrationHooks")
-	@ConditionalOnMissingBean
-	public DependencyRegistrationHookProvider dependencyWatcher(
-			ServiceDiscovery<ZookeeperInstance> serviceDiscovery,
-			DependencyPresenceOnStartupVerifier dependencyPresenceOnStartupVerifier,
-			ZookeeperDependencies zookeeperDependencies) {
-		return new DefaultDependencyWatcher(serviceDiscovery,
-				dependencyPresenceOnStartupVerifier, this.dependencyWatcherListeners,
-				zookeeperDependencies);
-	}
+    @Bean(destroyMethod = "clearDependencyRegistrationHooks")
+    @ConditionalOnMissingBean
+    public DependencyRegistrationHookProvider dependencyWatcher(
+            ServiceDiscovery<ZookeeperInstance> serviceDiscovery,
+            DependencyPresenceOnStartupVerifier dependencyPresenceOnStartupVerifier,
+            ZookeeperDependencies zookeeperDependencies) {
+        return new DefaultDependencyWatcher(serviceDiscovery,
+                dependencyPresenceOnStartupVerifier, this.dependencyWatcherListeners,
+                zookeeperDependencies);
+    }
 
 }

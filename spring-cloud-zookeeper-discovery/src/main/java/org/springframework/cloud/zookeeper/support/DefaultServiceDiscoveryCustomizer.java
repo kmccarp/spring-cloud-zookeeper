@@ -29,30 +29,30 @@ import org.springframework.cloud.zookeeper.discovery.ZookeeperInstance;
  */
 public class DefaultServiceDiscoveryCustomizer implements ServiceDiscoveryCustomizer {
 
-	protected CuratorFramework curator;
+    protected CuratorFramework curator;
 
-	protected ZookeeperDiscoveryProperties properties;
+    protected ZookeeperDiscoveryProperties properties;
 
-	protected InstanceSerializer<ZookeeperInstance> instanceSerializer;
+    protected InstanceSerializer<ZookeeperInstance> instanceSerializer;
 
-	public DefaultServiceDiscoveryCustomizer(CuratorFramework curator,
-			ZookeeperDiscoveryProperties properties,
-			InstanceSerializer<ZookeeperInstance> instanceSerializer) {
-		this.curator = curator;
-		this.properties = properties;
-		this.instanceSerializer = instanceSerializer;
-	}
+    public DefaultServiceDiscoveryCustomizer(CuratorFramework curator,
+                                              ZookeeperDiscoveryProperties properties,
+                                              InstanceSerializer<ZookeeperInstance> instanceSerializer) {
+        this.curator = curator;
+        this.properties = properties;
+        this.instanceSerializer = instanceSerializer;
+    }
 
-	@Override
-	public ServiceDiscovery<ZookeeperInstance> customize(
-			ServiceDiscoveryBuilder<ZookeeperInstance> builder) {
-		// @formatter:off
-		return builder
-				.client(this.curator)
-				.basePath(this.properties.getRoot())
-				.serializer(this.instanceSerializer)
-				.build();
-		// @formatter:on
-	}
+    @Override
+    public ServiceDiscovery<ZookeeperInstance> customize(
+            ServiceDiscoveryBuilder<ZookeeperInstance> builder) {
+        // @formatter:off
+        return builder
+                .client(this.curator)
+                .basePath(this.properties.getRoot())
+                .serializer(this.instanceSerializer)
+                .build();
+        // @formatter:on
+    }
 
 }

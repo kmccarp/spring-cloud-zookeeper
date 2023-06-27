@@ -49,58 +49,58 @@ import org.springframework.util.ClassUtils;
 @AutoConfigureBefore({CommonsClientAutoConfiguration.class})
 public class ZookeeperDiscoveryAutoConfiguration {
 
-	@Autowired
-	private CuratorFramework curator;
+    @Autowired
+    private CuratorFramework curator;
 
-	@Bean
-	@ConditionalOnMissingBean
-	public ZookeeperDiscoveryProperties zookeeperDiscoveryProperties(
-			InetUtils inetUtils) {
-		return new ZookeeperDiscoveryProperties(inetUtils);
-	}
+    @Bean
+    @ConditionalOnMissingBean
+    public ZookeeperDiscoveryProperties zookeeperDiscoveryProperties(
+            InetUtils inetUtils) {
+        return new ZookeeperDiscoveryProperties(inetUtils);
+    }
 
-	@Bean
-	public ZookeeperServiceWatch zookeeperServiceWatch(
-			ZookeeperDiscoveryProperties zookeeperDiscoveryProperties) {
-		return new ZookeeperServiceWatch(curator, zookeeperDiscoveryProperties);
-	}
+    @Bean
+    public ZookeeperServiceWatch zookeeperServiceWatch(
+            ZookeeperDiscoveryProperties zookeeperDiscoveryProperties) {
+        return new ZookeeperServiceWatch(curator, zookeeperDiscoveryProperties);
+    }
 
-	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass({ Endpoint.class, HealthIndicator.class })
-	protected static class ZookeeperDiscoveryHealthConfig {
+    @Configuration(proxyBeanMethods = false)
+    @ConditionalOnClass({Endpoint.class, HealthIndicator.class})
+    protected static class ZookeeperDiscoveryHealthConfig {
 
-		@Autowired(required = false)
-		private ZookeeperDependencies zookeeperDependencies;
+        @Autowired(required = false)
+        private ZookeeperDependencies zookeeperDependencies;
 
-		@Bean
-		@ConditionalOnMissingBean
-		@ConditionalOnEnabledHealthIndicator("zookeeper")
-		public ZookeeperDiscoveryHealthIndicator zookeeperDiscoveryHealthIndicator(
-				CuratorFramework curatorFramework,
-				ServiceDiscovery<ZookeeperInstance> serviceDiscovery,
-				ZookeeperDiscoveryProperties properties) {
-			return new ZookeeperDiscoveryHealthIndicator(curatorFramework,
-					serviceDiscovery, zookeeperDependencies, properties);
-		}
+        @Bean
+        @ConditionalOnMissingBean
+        @ConditionalOnEnabledHealthIndicator("zookeeper")
+        public ZookeeperDiscoveryHealthIndicator zookeeperDiscoveryHealthIndicator(
+                CuratorFramework curatorFramework,
+                ServiceDiscovery<ZookeeperInstance> serviceDiscovery,
+                ZookeeperDiscoveryProperties properties) {
+            return new ZookeeperDiscoveryHealthIndicator(curatorFramework,
+                    serviceDiscovery, zookeeperDependencies, properties);
+        }
 
-	}
+    }
 
 }
 
 class ZookeeperDiscoveryHints implements RuntimeHintsRegistrar {
 
-	@Override
-	public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
-		if (!ClassUtils.isPresent("org.apache.zookeeper.ZooKeeper", classLoader)) {
-			return;
-		}
-		hints.reflection()
-				.registerType(TypeReference.of(ZookeeperInstance.class),
-						hint -> hint.withMembers(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.DECLARED_FIELDS,
-								MemberCategory.INVOKE_DECLARED_METHODS));
-		hints.reflection().registerType(TypeReference.of(ZookeeperServiceInstance.class),
-				hint -> hint.withMembers(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.DECLARED_FIELDS,
-						MemberCategory.INVOKE_DECLARED_CONSTRUCTORS));
-	}
+    @Override
+    public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+        if (!ClassUtils.isPresent("org.apache.zookeeper.ZooKeeper", classLoader)) {
+            return;
+        }
+        hints.reflection()
+                .registerType(TypeReference.of(ZookeeperInstance.class),
+                        hint -> hint.withMembers(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.DECLARED_FIELDS,
+                                MemberCategory.INVOKE_DECLARED_METHODS));
+        hints.reflection().registerType(TypeReference.of(ZookeeperServiceInstance.class),
+                hint -> hint.withMembers(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.DECLARED_FIELDS,
+                        MemberCategory.INVOKE_DECLARED_CONSTRUCTORS));
+    }
 }
 

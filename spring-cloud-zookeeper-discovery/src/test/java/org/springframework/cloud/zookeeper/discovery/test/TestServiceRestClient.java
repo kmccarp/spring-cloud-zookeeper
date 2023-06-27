@@ -26,30 +26,30 @@ import org.springframework.web.client.RestTemplate;
  */
 public class TestServiceRestClient {
 
-	private static final Log log = LogFactory.getLog(TestServiceRestClient.class);
+    private static final Log log = LogFactory.getLog(TestServiceRestClient.class);
 
-	protected final RestTemplate restTemplate;
+    protected final RestTemplate restTemplate;
 
-	public TestServiceRestClient(RestTemplate restTemplate) {
-		this.restTemplate = restTemplate;
-	}
+    public TestServiceRestClient(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
+    }
 
-	public <T> T callService(String alias, String endpoint, Class<T> clazz) {
-		String url = "http://" + alias + "/" + endpoint;
-		log.info("Calling [" + url + "]");
-		return this.restTemplate.getForObject(url, clazz);
-	}
+    public <T> T callService(String alias, String endpoint, Class<T> clazz) {
+        String url = "http://" + alias + "/" + endpoint;
+        log.info("Calling [" + url + "]");
+        return this.restTemplate.getForObject(url, clazz);
+    }
 
-	public String callService(String alias, String endpoint) {
-		return callService(alias, endpoint, String.class);
-	}
+    public String callService(String alias, String endpoint) {
+        return callService(alias, endpoint, String.class);
+    }
 
-	public String callOnUrl(String url, String endpoint) {
-		if (!endpoint.startsWith("/")) {
-			endpoint = "/" + endpoint;
-		}
+    public String callOnUrl(String url, String endpoint) {
+        if (!endpoint.startsWith("/")) {
+            endpoint = "/" + endpoint;
+        }
 
-		return new RestTemplate().getForObject("http://" + url + endpoint, String.class);
-	}
+        return new RestTemplate().getForObject("http://" + url + endpoint, String.class);
+    }
 
 }

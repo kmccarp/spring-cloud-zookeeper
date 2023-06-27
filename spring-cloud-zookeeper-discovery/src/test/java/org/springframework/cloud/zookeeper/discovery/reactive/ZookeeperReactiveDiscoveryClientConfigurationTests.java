@@ -40,91 +40,91 @@ import static org.mockito.Mockito.mock;
  */
 class ZookeeperReactiveDiscoveryClientConfigurationTests {
 
-	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withInitializer(new ZookeeperTestingServer.Initializer())
-			.withConfiguration(
-					AutoConfigurations.of(UtilAutoConfiguration.class,
-							ReactiveCommonsClientAutoConfiguration.class,
-							CuratorServiceDiscoveryAutoConfiguration.class,
-							ZookeeperDiscoveryAutoConfiguration.class,
-							ZookeeperReactiveDiscoveryClientConfiguration.class))
-			.withUserConfiguration(MockedZookeeperConfiguration.class);
+    private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+            .withInitializer(new ZookeeperTestingServer.Initializer())
+            .withConfiguration(
+                    AutoConfigurations.of(UtilAutoConfiguration.class,
+                            ReactiveCommonsClientAutoConfiguration.class,
+                            CuratorServiceDiscoveryAutoConfiguration.class,
+                            ZookeeperDiscoveryAutoConfiguration.class,
+                            ZookeeperReactiveDiscoveryClientConfiguration.class))
+            .withUserConfiguration(MockedZookeeperConfiguration.class);
 
-	@Test
-	public void shouldWorkWithDefaults() {
-		contextRunner.run(context -> {
-			assertThat(context).hasSingleBean(ReactiveDiscoveryClient.class);
-			assertThat(context).hasSingleBean(
-					ReactiveDiscoveryClientHealthIndicator.class);
-		});
-	}
+    @Test
+    public void shouldWorkWithDefaults() {
+        contextRunner.run(context -> {
+            assertThat(context).hasSingleBean(ReactiveDiscoveryClient.class);
+            assertThat(context).hasSingleBean(
+                    ReactiveDiscoveryClientHealthIndicator.class);
+        });
+    }
 
-	@Test
-	public void shouldNotHaveDiscoveryClientWhenDiscoveryDisabled() {
-		contextRunner.withPropertyValues("spring.cloud.discovery.enabled=false")
-				.run(context -> {
-					assertThat(context).doesNotHaveBean("zookeeperReactiveDiscoveryClient");
-					assertThat(context).doesNotHaveBean(ReactiveDiscoveryClient.class);
-					assertThat(context).doesNotHaveBean(
-							ReactiveDiscoveryClientHealthIndicator.class);
-				});
-	}
+    @Test
+    public void shouldNotHaveDiscoveryClientWhenDiscoveryDisabled() {
+        contextRunner.withPropertyValues("spring.cloud.discovery.enabled=false")
+                .run(context -> {
+                    assertThat(context).doesNotHaveBean("zookeeperReactiveDiscoveryClient");
+                    assertThat(context).doesNotHaveBean(ReactiveDiscoveryClient.class);
+                    assertThat(context).doesNotHaveBean(
+                            ReactiveDiscoveryClientHealthIndicator.class);
+                });
+    }
 
-	@Test
-	public void shouldNotHaveDiscoveryClientWhenReactiveDiscoveryDisabled() {
-		contextRunner.withPropertyValues("spring.cloud.discovery.reactive.enabled=false")
-				.run(context -> {
-					assertThat(context).doesNotHaveBean("zookeeperReactiveDiscoveryClient");
-					assertThat(context).doesNotHaveBean(ReactiveDiscoveryClient.class);
-					assertThat(context).doesNotHaveBean(
-							ReactiveDiscoveryClientHealthIndicator.class);
-				});
-	}
+    @Test
+    public void shouldNotHaveDiscoveryClientWhenReactiveDiscoveryDisabled() {
+        contextRunner.withPropertyValues("spring.cloud.discovery.reactive.enabled=false")
+                .run(context -> {
+                    assertThat(context).doesNotHaveBean("zookeeperReactiveDiscoveryClient");
+                    assertThat(context).doesNotHaveBean(ReactiveDiscoveryClient.class);
+                    assertThat(context).doesNotHaveBean(
+                            ReactiveDiscoveryClientHealthIndicator.class);
+                });
+    }
 
-	@Test
-	public void shouldNotHaveDiscoveryClientWhenCloudFoundryDiscoveryDisabled() {
-		contextRunner
-				.withPropertyValues("spring.cloud.zookeeper.discovery.enabled=false")
-				.run(context -> {
-					assertThat(context).doesNotHaveBean("zookeeperReactiveDiscoveryClient");
-					assertThat(context).doesNotHaveBean(ReactiveDiscoveryClient.class);
-					assertThat(context).doesNotHaveBean(
-							ReactiveDiscoveryClientHealthIndicator.class);
-				});
-	}
+    @Test
+    public void shouldNotHaveDiscoveryClientWhenCloudFoundryDiscoveryDisabled() {
+        contextRunner
+                .withPropertyValues("spring.cloud.zookeeper.discovery.enabled=false")
+                .run(context -> {
+                    assertThat(context).doesNotHaveBean("zookeeperReactiveDiscoveryClient");
+                    assertThat(context).doesNotHaveBean(ReactiveDiscoveryClient.class);
+                    assertThat(context).doesNotHaveBean(
+                            ReactiveDiscoveryClientHealthIndicator.class);
+                });
+    }
 
-	@Test
-	public void worksWithoutWebflux() {
-		contextRunner
-				.withClassLoader(
-						new FilteredClassLoader("org.springframework.web.reactive"))
-				.run(context -> {
-					assertThat(context).doesNotHaveBean(ReactiveDiscoveryClient.class);
-					assertThat(context).doesNotHaveBean(
-							ReactiveDiscoveryClientHealthIndicator.class);
-				});
-	}
+    @Test
+    public void worksWithoutWebflux() {
+        contextRunner
+                .withClassLoader(
+                        new FilteredClassLoader("org.springframework.web.reactive"))
+                .run(context -> {
+                    assertThat(context).doesNotHaveBean(ReactiveDiscoveryClient.class);
+                    assertThat(context).doesNotHaveBean(
+                            ReactiveDiscoveryClientHealthIndicator.class);
+                });
+    }
 
-	@Test
-	public void worksWithoutActuator() {
-		contextRunner
-				.withClassLoader(
-						new FilteredClassLoader("org.springframework.boot.actuate"))
-				.run(context -> {
-					assertThat(context).hasSingleBean(ReactiveDiscoveryClient.class);
-					assertThat(context).doesNotHaveBean(
-							ReactiveDiscoveryClientHealthIndicator.class);
-				});
-	}
+    @Test
+    public void worksWithoutActuator() {
+        contextRunner
+                .withClassLoader(
+                        new FilteredClassLoader("org.springframework.boot.actuate"))
+                .run(context -> {
+                    assertThat(context).hasSingleBean(ReactiveDiscoveryClient.class);
+                    assertThat(context).doesNotHaveBean(
+                            ReactiveDiscoveryClientHealthIndicator.class);
+                });
+    }
 
-	@TestConfiguration
-	static class MockedZookeeperConfiguration {
+    @TestConfiguration
+    static class MockedZookeeperConfiguration {
 
-		@Bean
-		CuratorFramework curator() {
-			return mock(CuratorFramework.class);
-		}
+        @Bean
+        CuratorFramework curator() {
+            return mock(CuratorFramework.class);
+        }
 
-	}
+    }
 
 }

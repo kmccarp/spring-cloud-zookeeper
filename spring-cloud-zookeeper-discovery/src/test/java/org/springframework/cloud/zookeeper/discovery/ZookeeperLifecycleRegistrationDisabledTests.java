@@ -40,27 +40,27 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = ZookeeperLifecycleRegistrationDisabledTests.TestPropsConfig.class, properties = {
-		"spring.application.name=myTestNotRegisteredService",
-		"spring.cloud.zookeeper.discovery.register=false",
-		"spring.cloud.zookeeper.dependency.enabled=false" }, webEnvironment = RANDOM_PORT)
+        "spring.application.name=myTestNotRegisteredService",
+        "spring.cloud.zookeeper.discovery.register=false",
+        "spring.cloud.zookeeper.dependency.enabled=false"}, webEnvironment = RANDOM_PORT)
 @ContextConfiguration(loader = ZookeeperTestingServer.Loader.class)
 public class ZookeeperLifecycleRegistrationDisabledTests {
 
-	@Autowired
-	private ZookeeperDiscoveryClient client;
+    @Autowired
+    private ZookeeperDiscoveryClient client;
 
-	@Test
-	public void contextLoads() {
-		List<ServiceInstance> instances = this.client
-				.getInstances("myTestNotRegisteredService");
-		assertThat(instances.isEmpty()).as("service was registered").isTrue();
-	}
+    @Test
+    public void contextLoads() {
+        List<ServiceInstance> instances = this.client
+                .getInstances("myTestNotRegisteredService");
+        assertThat(instances.isEmpty()).as("service was registered").isTrue();
+    }
 
-	@Configuration
-	@EnableAutoConfiguration
-	@Import({ CommonTestConfig.class })
-	static class TestPropsConfig {
+    @Configuration
+    @EnableAutoConfiguration
+    @Import({CommonTestConfig.class})
+    static class TestPropsConfig {
 
-	}
+    }
 
 }

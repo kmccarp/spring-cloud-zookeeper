@@ -60,63 +60,63 @@ import org.springframework.context.annotation.Primary;
 @AutoConfigureAfter({FeignLoadBalancerAutoConfiguration.class, BlockingLoadBalancerClientAutoConfiguration.class})
 public class DependencyFeignClientAutoConfiguration {
 
-	private final FeignBlockingLoadBalancerClient feignLoadBalancerClient;
+    private final FeignBlockingLoadBalancerClient feignLoadBalancerClient;
 
-	private final ZookeeperDependencies zookeeperDependencies;
+    private final ZookeeperDependencies zookeeperDependencies;
 
-	private final BlockingLoadBalancerClient loadBalancerClient;
+    private final BlockingLoadBalancerClient loadBalancerClient;
 
-	private final LoadBalancerProperties loadBalancerProperties;
+    private final LoadBalancerProperties loadBalancerProperties;
 
-	private final LoadBalancerClientFactory loadBalancerClientFactory;
+    private final LoadBalancerClientFactory loadBalancerClientFactory;
 
-	public DependencyFeignClientAutoConfiguration(@Autowired(required = false) FeignBlockingLoadBalancerClient feignLoadBalancerClient,
-			ZookeeperDependencies zookeeperDependencies, BlockingLoadBalancerClient loadBalancerClient, LoadBalancerProperties loadBalancerProperties, LoadBalancerClientFactory loadBalancerClientFactory) {
-		this.feignLoadBalancerClient = feignLoadBalancerClient;
-		this.zookeeperDependencies = zookeeperDependencies;
-		this.loadBalancerClient = loadBalancerClient;
-		this.loadBalancerProperties = loadBalancerProperties;
-		this.loadBalancerClientFactory = loadBalancerClientFactory;
-	}
+    public DependencyFeignClientAutoConfiguration(@Autowired(required = false) FeignBlockingLoadBalancerClient feignLoadBalancerClient,
+                                                   ZookeeperDependencies zookeeperDependencies, BlockingLoadBalancerClient loadBalancerClient, LoadBalancerProperties loadBalancerProperties, LoadBalancerClientFactory loadBalancerClientFactory) {
+        this.feignLoadBalancerClient = feignLoadBalancerClient;
+        this.zookeeperDependencies = zookeeperDependencies;
+        this.loadBalancerClient = loadBalancerClient;
+        this.loadBalancerProperties = loadBalancerProperties;
+        this.loadBalancerClientFactory = loadBalancerClientFactory;
+    }
 
-	@Bean
-	@Primary
-	Client dependencyBasedFeignClient() {
-		return new FeignBlockingLoadBalancerClient(new Client.Default(null, null),
-				loadBalancerClient, loadBalancerProperties, loadBalancerClientFactory) {
+    @Bean
+    @Primary
+    Client dependencyBasedFeignClient() {
+        return new FeignBlockingLoadBalancerClient(new Client.Default(null, null),
+                loadBalancerClient, loadBalancerProperties, loadBalancerClientFactory) {
 
-			@Override
-			public Response execute(Request request, Request.Options options)
-					throws IOException {
-				URI asUri = URI.create(request.url());
-				String clientName = asUri.getHost();
-				ZookeeperDependency dependencyForAlias = DependencyFeignClientAutoConfiguration.this.zookeeperDependencies
-						.getDependencyForAlias(clientName);
-				Map<String, Collection<String>> headers = getUpdatedHeadersIfPossible(
-						request, dependencyForAlias);
-				if (DependencyFeignClientAutoConfiguration.this.feignLoadBalancerClient != null) {
-					return DependencyFeignClientAutoConfiguration.this.feignLoadBalancerClient
-							.execute(request(request, headers), options);
-				}
-				return super.execute(request(request, headers), options);
-			}
+            @Override
+            public Response execute(Request request, Request.Options options)
+                    throws IOException {
+                URI asUri = URI.create(request.url());
+                String clientName = asUri.getHost();
+                ZookeeperDependency dependencyForAlias = DependencyFeignClientAutoConfiguration.this.zookeeperDependencies
+                        .getDependencyForAlias(clientName);
+                Map<String, Collection<String>> headers = getUpdatedHeadersIfPossible(
+                        request, dependencyForAlias);
+                if (DependencyFeignClientAutoConfiguration.this.feignLoadBalancerClient != null) {
+                    return DependencyFeignClientAutoConfiguration.this.feignLoadBalancerClient
+                            .execute(request(request, headers), options);
+                }
+                return super.execute(request(request, headers), options);
+            }
 
-			private Request request(Request request,
-					Map<String, Collection<String>> headers) {
-				return Request.create(request.httpMethod(), request.url(), headers,
-						request.body(), request.charset(), request.requestTemplate());
-			}
+            private Request request(Request request,
+                     Map<String, Collection<String>> headers) {
+                return Request.create(request.httpMethod(), request.url(), headers,
+                        request.body(), request.charset(), request.requestTemplate());
+            }
 
-			private Map<String, Collection<String>> getUpdatedHeadersIfPossible(
-					Request request, ZookeeperDependency dependencyForAlias) {
-				if (dependencyForAlias != null) {
-					return Collections.unmodifiableMap(new HashMap<>(
-							dependencyForAlias.getUpdatedHeaders(request.headers())));
-				}
-				return request.headers();
-			}
+            private Map<String, Collection<String>> getUpdatedHeadersIfPossible(
+                    Request request, ZookeeperDependency dependencyForAlias) {
+                if (dependencyForAlias != null) {
+                    return Collections.unmodifiableMap(new HashMap<>(
+                            dependencyForAlias.getUpdatedHeaders(request.headers())));
+                }
+                return request.headers();
+            }
 
-		};
-	}
+        };
+    }
 
 }

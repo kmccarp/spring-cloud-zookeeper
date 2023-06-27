@@ -44,41 +44,41 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = ZookeeperDiscoverySecurePortTests.Config.class, properties = {
-		"feign.hystrix.enabled=false",
-		"spring.cloud.zookeeper.discovery.uriSpec={scheme}://{address}:{port}/contextPath",
-		"spring.cloud.zookeeper.discovery.instance-ssl-port=8443" }, webEnvironment = RANDOM_PORT)
+        "feign.hystrix.enabled=false",
+        "spring.cloud.zookeeper.discovery.uriSpec={scheme}://{address}:{port}/contextPath",
+        "spring.cloud.zookeeper.discovery.instance-ssl-port=8443"}, webEnvironment = RANDOM_PORT)
 @ActiveProfiles("loadbalancer")
 @DirtiesContext
 @ContextConfiguration(loader = ZookeeperTestingServer.Loader.class)
 public class ZookeeperDiscoverySecurePortTests {
 
-	@Autowired
-	private LoadBalancerClient loadBalancerClient;
+    @Autowired
+    private LoadBalancerClient loadBalancerClient;
 
-	@Autowired
-	private ZookeeperRegistration zookeeperRegistration;
+    @Autowired
+    private ZookeeperRegistration zookeeperRegistration;
 
-	@Value("${spring.application.name}")
-	private String springAppName;
+    @Value("${spring.application.name}")
+    private String springAppName;
 
-	@Test
-	public void isSecureIsTrue() {
-		ServiceInstance instance = this.loadBalancerClient.choose(this.springAppName);
-		then(instance.isSecure()).isTrue();
-	}
+    @Test
+    public void isSecureIsTrue() {
+        ServiceInstance instance = this.loadBalancerClient.choose(this.springAppName);
+        then(instance.isSecure()).isTrue();
+    }
 
-	@Test
-	public void shouldSetServiceInstanceSslPort() {
-		then(this.zookeeperRegistration.getServiceInstance().getSslPort())
-				.isEqualTo(8443);
-	}
+    @Test
+    public void shouldSetServiceInstanceSslPort() {
+        then(this.zookeeperRegistration.getServiceInstance().getSslPort())
+                .isEqualTo(8443);
+    }
 
-	@Configuration
-	@EnableAutoConfiguration
-	@Import(CommonTestConfig.class)
-	@Profile("loadbalancer")
-	static class Config {
+    @Configuration
+    @EnableAutoConfiguration
+    @Import(CommonTestConfig.class)
+    @Profile("loadbalancer")
+    static class Config {
 
-	}
+    }
 
 }

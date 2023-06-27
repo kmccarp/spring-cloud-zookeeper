@@ -26,8 +26,8 @@ import org.springframework.cloud.zookeeper.discovery.ZookeeperInstance;
  */
 public interface ZookeeperRegistration extends Registration {
 
-	ServiceInstance<ZookeeperInstance> getServiceInstance();
+    ServiceInstance<ZookeeperInstance> getServiceInstance();
 
-	void setPort(int port);
+    void setPort(int port);
 
 }

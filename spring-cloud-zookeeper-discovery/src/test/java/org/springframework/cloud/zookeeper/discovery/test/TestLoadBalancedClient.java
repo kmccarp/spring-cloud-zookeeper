@@ -24,28 +24,28 @@ import org.springframework.web.client.RestTemplate;
  */
 public class TestLoadBalancedClient extends TestServiceRestClient {
 
-	public static final String BASE_PATH = new WebEndpointProperties().getBasePath();
+    public static final String BASE_PATH = new WebEndpointProperties().getBasePath();
 
-	private final String thisAppName;
+    private final String thisAppName;
 
-	public TestLoadBalancedClient(RestTemplate restTemplate) {
-		super(restTemplate);
-		this.thisAppName = "someName";
-	}
+    public TestLoadBalancedClient(RestTemplate restTemplate) {
+        super(restTemplate);
+        this.thisAppName = "someName";
+    }
 
-	public TestLoadBalancedClient(RestTemplate restTemplate, String thisAppName) {
-		super(restTemplate);
-		this.thisAppName = thisAppName;
-	}
+    public TestLoadBalancedClient(RestTemplate restTemplate, String thisAppName) {
+        super(restTemplate);
+        this.thisAppName = thisAppName;
+    }
 
-	public String thisHealthCheck() {
-		return this.restTemplate.getForObject(
-				"http://" + this.thisAppName + BASE_PATH + "/health", String.class);
-	}
+    public String thisHealthCheck() {
+        return this.restTemplate.getForObject(
+                "http://" + this.thisAppName + BASE_PATH + "/health", String.class);
+    }
 
-	public Integer thisPort() {
-		return this.restTemplate.getForObject("http://" + this.thisAppName + "/port",
-				Integer.class);
-	}
+    public Integer thisPort() {
+        return this.restTemplate.getForObject("http://" + this.thisAppName + "/port",
+                Integer.class);
+    }
 
 }

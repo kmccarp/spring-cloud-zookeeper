@@ -51,65 +51,65 @@ import static org.mockito.Mockito.verify;
  * @author Dave Syer
  */
 @RunWith(ModifiedClassPathRunner.class)
-@ClassPathExclusions({ "spring-retry-*.jar", "spring-boot-starter-aop-*.jar" })
+@ClassPathExclusions({"spring-retry-*.jar", "spring-boot-starter-aop-*.jar"})
 public class DiscoveryClientConfigServiceAutoConfigurationTests {
 
-	private AnnotationConfigApplicationContext context;
+    private AnnotationConfigApplicationContext context;
 
-	@After
-	public void close() {
-		if (this.context != null) {
-			if (this.context.getParent() != null) {
-				((AnnotationConfigApplicationContext) this.context.getParent()).close();
-			}
-			this.context.close();
-		}
-	}
+    @After
+    public void close() {
+        if (this.context != null) {
+            if (this.context.getParent() != null) {
+                ((AnnotationConfigApplicationContext)this.context.getParent()).close();
+            }
+            this.context.close();
+        }
+    }
 
-	@Test
-	public void onWhenRequested() {
-		setup("server.port=7000", "spring.cloud.config.discovery.enabled=true",
-				"spring.cloud.zookeeper.discovery.instance-port:7001",
-				"spring.cloud.zookeeper.discovery.instance-host:foo",
-				"spring.cloud.config.discovery.service-id:configserver");
-		assertThat(this.context.getBeanNamesForType(ZookeeperConfigServerAutoConfiguration.class).length).isEqualTo(1);
-		ZookeeperDiscoveryClient client = this.context.getParent().getBean(ZookeeperDiscoveryClient.class);
-		verify(client, atLeast(2)).getInstances("configserver");
-		ConfigClientProperties locator = this.context.getBean(ConfigClientProperties.class);
-		assertThat(locator.getUri()[0]).isEqualTo("http://foo:7001/");
-	}
+    @Test
+    public void onWhenRequested() {
+        setup("server.port=7000", "spring.cloud.config.discovery.enabled=true",
+                "spring.cloud.zookeeper.discovery.instance-port:7001",
+                "spring.cloud.zookeeper.discovery.instance-host:foo",
+                "spring.cloud.config.discovery.service-id:configserver");
+        assertThat(this.context.getBeanNamesForType(ZookeeperConfigServerAutoConfiguration.class).length).isEqualTo(1);
+        ZookeeperDiscoveryClient client = this.context.getParent().getBean(ZookeeperDiscoveryClient.class);
+        verify(client, atLeast(2)).getInstances("configserver");
+        ConfigClientProperties locator = this.context.getBean(ConfigClientProperties.class);
+        assertThat(locator.getUri()[0]).isEqualTo("http://foo:7001/");
+    }
 
-	private void setup(String... env) {
-		ZookeeperTestingServer testingServer = new ZookeeperTestingServer();
-		testingServer.start();
-		AnnotationConfigApplicationContext parent = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of(env).applyTo(parent);
-		TestPropertyValues.of(ZookeeperProperties.PREFIX + ".connect-string=localhost:" + testingServer.getPort())
-				.applyTo(parent);
-		parent.register(UtilAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class,
-				EnvironmentKnobbler.class, ZookeeperDiscoveryClientConfigServiceBootstrapConfiguration.class,
-				DiscoveryClientConfigServiceBootstrapConfiguration.class, ConfigClientProperties.class);
-		testingServer.appPrepared(parent);
-		parent.refresh();
-		this.context = new AnnotationConfigApplicationContext();
-		this.context.setParent(parent);
-		this.context.register(PropertyPlaceholderAutoConfiguration.class, ZookeeperConfigServerAutoConfiguration.class,
-				ZookeeperAutoConfiguration.class, ZookeeperDiscoveryClientConfiguration.class);
-		this.context.refresh();
-	}
+    private void setup(String... env) {
+        ZookeeperTestingServer testingServer = new ZookeeperTestingServer();
+        testingServer.start();
+        AnnotationConfigApplicationContext parent = new AnnotationConfigApplicationContext();
+        TestPropertyValues.of(env).applyTo(parent);
+        TestPropertyValues.of(ZookeeperProperties.PREFIX + ".connect-string=localhost:" + testingServer.getPort())
+                .applyTo(parent);
+        parent.register(UtilAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class,
+                EnvironmentKnobbler.class, ZookeeperDiscoveryClientConfigServiceBootstrapConfiguration.class,
+                DiscoveryClientConfigServiceBootstrapConfiguration.class, ConfigClientProperties.class);
+        testingServer.appPrepared(parent);
+        parent.refresh();
+        this.context = new AnnotationConfigApplicationContext();
+        this.context.setParent(parent);
+        this.context.register(PropertyPlaceholderAutoConfiguration.class, ZookeeperConfigServerAutoConfiguration.class,
+                ZookeeperAutoConfiguration.class, ZookeeperDiscoveryClientConfiguration.class);
+        this.context.refresh();
+    }
 
-	@Configuration
-	protected static class EnvironmentKnobbler {
+    @Configuration
+    protected static class EnvironmentKnobbler {
 
-		@Bean
-		public ZookeeperDiscoveryClient zookeeperDiscoveryClient(ZookeeperDiscoveryProperties properties) {
-			ZookeeperDiscoveryClient client = mock(ZookeeperDiscoveryClient.class);
-			ServiceInstance instance = new DefaultServiceInstance("configserver1", "configserver",
-					properties.getInstanceHost(), properties.getInstancePort(), false);
-			given(client.getInstances("configserver")).willReturn(Arrays.asList(instance));
-			return client;
-		}
+        @Bean
+        public ZookeeperDiscoveryClient zookeeperDiscoveryClient(ZookeeperDiscoveryProperties properties) {
+            ZookeeperDiscoveryClient client = mock(ZookeeperDiscoveryClient.class);
+            ServiceInstance instance = new DefaultServiceInstance("configserver1", "configserver",
+                    properties.getInstanceHost(), properties.getInstancePort(), false);
+            given(client.getInstances("configserver")).willReturn(Arrays.asList(instance));
+            return client;
+        }
 
-	}
+    }
 
 }

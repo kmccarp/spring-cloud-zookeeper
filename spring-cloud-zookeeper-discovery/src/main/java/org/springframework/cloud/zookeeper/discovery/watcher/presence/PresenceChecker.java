@@ -29,11 +29,11 @@ import org.apache.curator.x.discovery.ServiceInstance;
  */
 public interface PresenceChecker {
 
-	/**
-	 * Checks if a given dependency is present.
-	 * @param dependencyName Name of the dependency.
-	 * @param serviceInstances - instances to check the dependency for.
-	 */
-	void checkPresence(String dependencyName, List<ServiceInstance<?>> serviceInstances);
+    /**
+     * Checks if a given dependency is present.
+     * @param dependencyName Name of the dependency.
+     * @param serviceInstances - instances to check the dependency for.
+     */
+    void checkPresence(String dependencyName, List<ServiceInstance<?>> serviceInstances);
 
 }

@@ -39,47 +39,47 @@ import org.springframework.util.StringUtils;
 @ConditionalOnMissingBean(type = "org.springframework.cloud.zookeeper.discovery.ZookeeperLifecycle")
 @ConditionalOnZookeeperDiscoveryEnabled
 @ConditionalOnProperty(value = "spring.cloud.service-registry.auto-registration.enabled", matchIfMissing = true)
-@AutoConfigureAfter({ ZookeeperServiceRegistryAutoConfiguration.class })
-@AutoConfigureBefore({ AutoServiceRegistrationAutoConfiguration.class,
-		ZookeeperDiscoveryAutoConfiguration.class })
+@AutoConfigureAfter({ZookeeperServiceRegistryAutoConfiguration.class})
+@AutoConfigureBefore({AutoServiceRegistrationAutoConfiguration.class,
+        ZookeeperDiscoveryAutoConfiguration.class})
 public class ZookeeperAutoServiceRegistrationAutoConfiguration {
 
-	@Bean
-	public ZookeeperAutoServiceRegistration zookeeperAutoServiceRegistration(
-			ZookeeperServiceRegistry registry, ZookeeperRegistration registration,
-			ZookeeperDiscoveryProperties properties) {
-		return new ZookeeperAutoServiceRegistration(registry, registration, properties);
-	}
+    @Bean
+    public ZookeeperAutoServiceRegistration zookeeperAutoServiceRegistration(
+            ZookeeperServiceRegistry registry, ZookeeperRegistration registration,
+            ZookeeperDiscoveryProperties properties) {
+        return new ZookeeperAutoServiceRegistration(registry, registration, properties);
+    }
 
-	@Bean
-	@ConditionalOnMissingBean(ZookeeperRegistration.class)
-	public ServiceInstanceRegistration serviceInstanceRegistration(
-			ApplicationContext context, ZookeeperDiscoveryProperties properties) {
-		String appName = context.getEnvironment().getProperty("spring.application.name",
-				"application");
-		String host = properties.getInstanceHost();
-		if (!StringUtils.hasText(host)) {
-			throw new IllegalStateException("instanceHost must not be empty");
-		}
+    @Bean
+    @ConditionalOnMissingBean(ZookeeperRegistration.class)
+    public ServiceInstanceRegistration serviceInstanceRegistration(
+            ApplicationContext context, ZookeeperDiscoveryProperties properties) {
+        String appName = context.getEnvironment().getProperty("spring.application.name",
+                "application");
+        String host = properties.getInstanceHost();
+        if (!StringUtils.hasText(host)) {
+            throw new IllegalStateException("instanceHost must not be empty");
+        }
 
-		properties.getMetadata().put(StatusConstants.INSTANCE_STATUS_KEY, properties.getInitialStatus());
+        properties.getMetadata().put(StatusConstants.INSTANCE_STATUS_KEY, properties.getInitialStatus());
 
-		ZookeeperInstance zookeeperInstance = new ZookeeperInstance(context.getId(),
-				appName, properties.getMetadata());
-		RegistrationBuilder builder = ServiceInstanceRegistration.builder().address(host)
-				.name(appName).payload(zookeeperInstance)
-				.uriSpec(properties.getUriSpec());
+        ZookeeperInstance zookeeperInstance = new ZookeeperInstance(context.getId(),
+                appName, properties.getMetadata());
+        RegistrationBuilder builder = ServiceInstanceRegistration.builder().address(host)
+                .name(appName).payload(zookeeperInstance)
+                .uriSpec(properties.getUriSpec());
 
-		if (properties.getInstanceSslPort() != null) {
-			builder.sslPort(properties.getInstanceSslPort());
-		}
-		if (properties.getInstanceId() != null) {
-			builder.id(properties.getInstanceId());
-		}
+        if (properties.getInstanceSslPort() != null) {
+            builder.sslPort(properties.getInstanceSslPort());
+        }
+        if (properties.getInstanceId() != null) {
+            builder.id(properties.getInstanceId());
+        }
 
-		// TODO add customizer?
+        // TODO add customizer?
 
-		return builder.build();
-	}
+        return builder.build();
+    }
 
 }

@@ -24,9 +24,9 @@ package org.springframework.cloud.zookeeper.discovery.watcher;
  */
 public enum DependencyState {
 
-	/**
-	 * valid states.
-	 */
-	CONNECTED, DISCONNECTED
+    /**
+     * valid states.
+     */
+    CONNECTED, DISCONNECTED
 
 }

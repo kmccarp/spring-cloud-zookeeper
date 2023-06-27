@@ -39,29 +39,29 @@ import org.springframework.context.annotation.Configuration;
 @ConditionalOnDiscoveryEnabled
 @ConditionalOnBlockingDiscoveryEnabled
 @ConditionalOnZookeeperDiscoveryEnabled
-@AutoConfigureBefore({ ZookeeperDiscoveryAutoConfiguration.class })
+@AutoConfigureBefore({ZookeeperDiscoveryAutoConfiguration.class})
 public class ZookeeperDiscoveryClientConfiguration {
 
-	@Autowired(required = false)
-	private ZookeeperDependencies zookeeperDependencies;
+    @Autowired(required = false)
+    private ZookeeperDependencies zookeeperDependencies;
 
-	@Bean
-	@ConditionalOnMissingBean
-	// currently means auto-registration is false. That will change when
-	// ZookeeperServiceDiscovery is gone
-	public ZookeeperDiscoveryClient zookeeperDiscoveryClient(
-			ServiceDiscovery<ZookeeperInstance> serviceDiscovery,
-			ZookeeperDiscoveryProperties zookeeperDiscoveryProperties) {
-		return new ZookeeperDiscoveryClient(serviceDiscovery, zookeeperDependencies,
-				zookeeperDiscoveryProperties);
-	}
+    @Bean
+    @ConditionalOnMissingBean
+    // currently means auto-registration is false. That will change when
+    // ZookeeperServiceDiscovery is gone
+    public ZookeeperDiscoveryClient zookeeperDiscoveryClient(
+            ServiceDiscovery<ZookeeperInstance> serviceDiscovery,
+            ZookeeperDiscoveryProperties zookeeperDiscoveryProperties) {
+        return new ZookeeperDiscoveryClient(serviceDiscovery, zookeeperDependencies,
+                zookeeperDiscoveryProperties);
+    }
 
-	@Bean
-	public Marker zookeeperDiscoveryClientMarker() {
-		return new Marker();
-	}
+    @Bean
+    public Marker zookeeperDiscoveryClientMarker() {
+        return new Marker();
+    }
 
-	class Marker {
-	}
+    class Marker {
+    }
 
 }

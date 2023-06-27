@@ -34,31 +34,31 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * @author wmz7year
  */
-@SpringBootTest(properties = { "spring.application.name=testZookeeperDiscovery",
-		"spring.cloud.service-registry.auto-registration.enabled=false",
-		"spring.cloud.zookeeper.discovery.instance-id=zkpropstestid-123",
-		"spring.cloud.zookeeper.discovery.preferIpAddress=true",
-		"spring.cloud.zookeeper.discovery.instanceIpAddress=1.1.1.1" },
-		classes = ZookeeperDiscoveryPropertiesIntegrationTests.Config.class,
-		webEnvironment = WebEnvironment.RANDOM_PORT)
+@SpringBootTest(properties = {"spring.application.name=testZookeeperDiscovery",
+        "spring.cloud.service-registry.auto-registration.enabled=false",
+        "spring.cloud.zookeeper.discovery.instance-id=zkpropstestid-123",
+        "spring.cloud.zookeeper.discovery.preferIpAddress=true",
+        "spring.cloud.zookeeper.discovery.instanceIpAddress=1.1.1.1"},
+        classes = ZookeeperDiscoveryPropertiesIntegrationTests.Config.class,
+        webEnvironment = WebEnvironment.RANDOM_PORT)
 @ContextConfiguration(loader = ZookeeperTestingServer.Loader.class)
 public class ZookeeperDiscoveryPropertiesIntegrationTests {
 
-	@Autowired
-	private ZookeeperDiscoveryProperties discoveryProperties;
+    @Autowired
+    private ZookeeperDiscoveryProperties discoveryProperties;
 
-	@Test
-	public void testPreferIpAddress() {
-		assertThat(this.discoveryProperties.getInstanceId())
-				.isEqualTo("zkpropstestid-123");
-		assertThat(this.discoveryProperties.getInstanceHost()).isEqualTo("1.1.1.1");
-	}
+    @Test
+    public void testPreferIpAddress() {
+        assertThat(this.discoveryProperties.getInstanceId())
+                .isEqualTo("zkpropstestid-123");
+        assertThat(this.discoveryProperties.getInstanceHost()).isEqualTo("1.1.1.1");
+    }
 
-	@Configuration
-	@EnableAutoConfiguration
-	@Import(CommonTestConfig.class)
-	static class Config {
+    @Configuration
+    @EnableAutoConfiguration
+    @Import(CommonTestConfig.class)
+    static class Config {
 
-	}
+    }
 
 }

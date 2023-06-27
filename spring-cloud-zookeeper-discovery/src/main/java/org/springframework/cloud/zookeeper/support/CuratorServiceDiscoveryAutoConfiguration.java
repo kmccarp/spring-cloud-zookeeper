@@ -39,30 +39,30 @@ import org.springframework.context.annotation.Configuration;
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnDiscoveryEnabled
 @ConditionalOnZookeeperDiscoveryEnabled
-@AutoConfigureBefore({ ZookeeperDiscoveryAutoConfiguration.class,
-		ZookeeperServiceRegistryAutoConfiguration.class })
+@AutoConfigureBefore({ZookeeperDiscoveryAutoConfiguration.class,
+        ZookeeperServiceRegistryAutoConfiguration.class})
 public class CuratorServiceDiscoveryAutoConfiguration {
 
-	@Bean
-	@ConditionalOnMissingBean(ServiceDiscoveryCustomizer.class)
-	public DefaultServiceDiscoveryCustomizer defaultServiceDiscoveryCustomizer(
-			CuratorFramework curator, ZookeeperDiscoveryProperties properties,
-			InstanceSerializer<ZookeeperInstance> serializer) {
-		return new DefaultServiceDiscoveryCustomizer(curator, properties, serializer);
-	}
+    @Bean
+    @ConditionalOnMissingBean(ServiceDiscoveryCustomizer.class)
+    public DefaultServiceDiscoveryCustomizer defaultServiceDiscoveryCustomizer(
+            CuratorFramework curator, ZookeeperDiscoveryProperties properties,
+            InstanceSerializer<ZookeeperInstance> serializer) {
+        return new DefaultServiceDiscoveryCustomizer(curator, properties, serializer);
+    }
 
-	@Bean
-	@ConditionalOnMissingBean
-	public InstanceSerializer<ZookeeperInstance> deprecatedInstanceSerializer() {
-		return new JsonInstanceSerializer<>(ZookeeperInstance.class);
-	}
+    @Bean
+    @ConditionalOnMissingBean
+    public InstanceSerializer<ZookeeperInstance> deprecatedInstanceSerializer() {
+        return new JsonInstanceSerializer<>(ZookeeperInstance.class);
+    }
 
-	@Bean
-	@ConditionalOnMissingBean
-	public ServiceDiscovery<ZookeeperInstance> curatorServiceDiscovery(
-			ServiceDiscoveryCustomizer customizer) {
-		return customizer
-				.customize(ServiceDiscoveryBuilder.builder(ZookeeperInstance.class));
-	}
+    @Bean
+    @ConditionalOnMissingBean
+    public ServiceDiscovery<ZookeeperInstance> curatorServiceDiscovery(
+            ServiceDiscoveryCustomizer customizer) {
+        return customizer
+                .customize(ServiceDiscoveryBuilder.builder(ZookeeperInstance.class));
+    }
 
 }

@@ -41,21 +41,21 @@ import org.springframework.core.annotation.Order;
 @ConditionalOnClass(ConfigServicePropertySourceLocator.class)
 @ConditionalOnProperty(value = "spring.cloud.config.discovery.enabled", matchIfMissing = false)
 @Configuration(proxyBeanMethods = false)
-@Import({ ZookeeperAutoConfiguration.class, ZookeeperDiscoveryClientConfiguration.class,
-		CuratorServiceDiscoveryAutoConfiguration.class,
-		ZookeeperDiscoveryAutoConfiguration.class })
+@Import({ZookeeperAutoConfiguration.class, ZookeeperDiscoveryClientConfiguration.class,
+        CuratorServiceDiscoveryAutoConfiguration.class,
+        ZookeeperDiscoveryAutoConfiguration.class})
 @EnableConfigurationProperties({DiscoveryClientHealthIndicatorProperties.class})
 @Order(0)
 public class ZookeeperDiscoveryClientConfigServiceBootstrapConfiguration {
 
-	@Bean
-	public ZookeeperDiscoveryProperties zookeeperDiscoveryProperties(
-			InetUtils inetUtils) {
-		ZookeeperDiscoveryProperties properties = new ZookeeperDiscoveryProperties(
-				inetUtils);
-		// for bootstrap, registration is not needed, just discovery client
-		properties.setRegister(false);
-		return properties;
-	}
+    @Bean
+    public ZookeeperDiscoveryProperties zookeeperDiscoveryProperties(
+            InetUtils inetUtils) {
+        ZookeeperDiscoveryProperties properties = new ZookeeperDiscoveryProperties(
+                inetUtils);
+        // for bootstrap, registration is not needed, just discovery client
+        properties.setRegister(false);
+        return properties;
+    }
 
 }

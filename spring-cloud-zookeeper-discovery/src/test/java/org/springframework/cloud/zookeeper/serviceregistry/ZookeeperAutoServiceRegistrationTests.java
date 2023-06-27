@@ -44,59 +44,59 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(properties = {
-		"spring.application.name=myTestService1-F",
-		"spring.cloud.zookeeper.discovery.initial-status=OUT_OF_SERVICE"
+        "spring.application.name=myTestService1-F",
+        "spring.cloud.zookeeper.discovery.initial-status=OUT_OF_SERVICE"
 }, webEnvironment = RANDOM_PORT)
 @ContextConfiguration(loader = ZookeeperTestingServer.Loader.class)
 public class ZookeeperAutoServiceRegistrationTests {
 
-	@Autowired
-	private ZookeeperRegistration registration;
+    @Autowired
+    private ZookeeperRegistration registration;
 
-	@Autowired
-	private ServiceDiscovery<ZookeeperInstance> serviceDiscovery;
+    @Autowired
+    private ServiceDiscovery<ZookeeperInstance> serviceDiscovery;
 
-	@Autowired
-	private ZookeeperDiscoveryProperties properties;
+    @Autowired
+    private ZookeeperDiscoveryProperties properties;
 
-	@Test
-	public void contextLoads() throws Exception {
-		Collection<ServiceInstance<ZookeeperInstance>> instances = serviceDiscovery
-				.queryForInstances("myTestService1-F");
-		assertThat(instances).hasSize(1);
+    @Test
+    public void contextLoads() throws Exception {
+        Collection<ServiceInstance<ZookeeperInstance>> instances = serviceDiscovery
+                .queryForInstances("myTestService1-F");
+        assertThat(instances).hasSize(1);
 
-		ServiceInstance<ZookeeperInstance> instance = instances.iterator().next();
-		assertThat(instance).isNotNull();
-		assertThat(instance.getName()).isEqualTo("myTestService1-F");
-		assertThat(instance.getPayload().getMetadata().get(StatusConstants.INSTANCE_STATUS_KEY))
-				.isEqualTo(StatusConstants.STATUS_OUT_OF_SERVICE);
-		/*
-		 * Response<Map<String, Service>> response = consul.getAgentServices();
-		 * Map<String, Service> services = response.getValue(); Service service =
-		 * services.get(registration.getServiceId()); assertNotNull("service was null",
-		 * service); assertNotEquals("service port is 0", 0,
-		 * service.getPort().intValue());
-		 * assertFalse("service id contained invalid character: " + service.getId(),
-		 * service.getId().contains(":")); assertEquals("service id was wrong",
-		 * registration.getServiceId(), service.getId());
-		 * assertEquals("service name was wrong", "myTestService1-FF-something",
-		 * service.getService()); assertFalse("service address must not be empty",
-		 * !StringUtils.hasLength(service.getAddress()));
-		 * assertEquals("service address must equals hostname from discovery properties",
-		 * discoveryProperties.getHostname(), service.getAddress());
-		 */
-	}
+        ServiceInstance<ZookeeperInstance> instance = instances.iterator().next();
+        assertThat(instance).isNotNull();
+        assertThat(instance.getName()).isEqualTo("myTestService1-F");
+        assertThat(instance.getPayload().getMetadata().get(StatusConstants.INSTANCE_STATUS_KEY))
+                .isEqualTo(StatusConstants.STATUS_OUT_OF_SERVICE);
+        /*
+         * Response<Map<String, Service>> response = consul.getAgentServices();
+         * Map<String, Service> services = response.getValue(); Service service =
+         * services.get(registration.getServiceId()); assertNotNull("service was null",
+         * service); assertNotEquals("service port is 0", 0,
+         * service.getPort().intValue());
+         * assertFalse("service id contained invalid character: " + service.getId(),
+         * service.getId().contains(":")); assertEquals("service id was wrong",
+         * registration.getServiceId(), service.getId());
+         * assertEquals("service name was wrong", "myTestService1-FF-something",
+         * service.getService()); assertFalse("service address must not be empty",
+         * !StringUtils.hasLength(service.getAddress()));
+         * assertEquals("service address must equals hostname from discovery properties",
+         * discoveryProperties.getHostname(), service.getAddress());
+         */
+    }
 
-	@SpringBootConfiguration
-	@EnableAutoConfiguration
-	@Import({ CommonTestConfig.class })
-	/*
-	 * @ImportAutoConfiguration({AutoServiceRegistrationAutoConfiguration.class,
-	 * ZookeeperAutoServiceRegistration.class,
-	 * ZookeeperServiceRegistryAutoConfiguration.class})
-	 */
-	protected static class TestConfig {
+    @SpringBootConfiguration
+    @EnableAutoConfiguration
+    @Import({CommonTestConfig.class})
+    /*
+     * @ImportAutoConfiguration({AutoServiceRegistrationAutoConfiguration.class,
+     * ZookeeperAutoServiceRegistration.class,
+     * ZookeeperServiceRegistryAutoConfiguration.class})
+     */
+    protected static class TestConfig {
 
-	}
+    }
 
 }

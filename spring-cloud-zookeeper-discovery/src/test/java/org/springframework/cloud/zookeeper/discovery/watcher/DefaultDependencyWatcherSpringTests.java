@@ -54,96 +54,96 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @ActiveProfiles("watcher")
 public class DefaultDependencyWatcherSpringTests {
 
-	@Autowired
-	AssertableDependencyPresenceOnStartupVerifier dependencyPresenceOnStartupVerifier;
+    @Autowired
+    AssertableDependencyPresenceOnStartupVerifier dependencyPresenceOnStartupVerifier;
 
-	@Autowired
-	AssertableDependencyWatcherListener dependencyWatcherListener;
+    @Autowired
+    AssertableDependencyWatcherListener dependencyWatcherListener;
 
-	@Autowired
-	ZookeeperRegistration zookeeperRegistration;
+    @Autowired
+    ZookeeperRegistration zookeeperRegistration;
 
-	@Autowired
-	ZookeeperServiceRegistry registry;
+    @Autowired
+    ZookeeperServiceRegistry registry;
 
-	@Test
-	public void should_verify_that_presence_of_a_dependency_has_been_checked() {
-		then(this.dependencyPresenceOnStartupVerifier.startupPresenceVerified).isTrue();
-	}
+    @Test
+    public void should_verify_that_presence_of_a_dependency_has_been_checked() {
+        then(this.dependencyPresenceOnStartupVerifier.startupPresenceVerified).isTrue();
+    }
 
-	@Ignore // FIXME 2.0.0
-	@Test
-	public void should_verify_that_dependency_watcher_listener_is_successfully_registered_and_operational()
-			throws Exception {
-		// when:
-		this.registry.deregister(this.zookeeperRegistration);
+    @Ignore // FIXME 2.0.0
+    @Test
+    public void should_verify_that_dependency_watcher_listener_is_successfully_registered_and_operational()
+            throws Exception {
+        // when:
+        this.registry.deregister(this.zookeeperRegistration);
 
-		// then:
-		Awaitility.await().until(new Callable<Boolean>() {
-			@Override
-			public Boolean call() throws Exception {
-				then(DefaultDependencyWatcherSpringTests.this.dependencyWatcherListener.dependencyState)
-						.isEqualTo(DependencyState.DISCONNECTED);
-				return true;
-			}
-		});
-	}
+        // then:
+        Awaitility.await().until(new Callable<Boolean>() {
+            @Override
+            public Boolean call() throws Exception {
+                then(DefaultDependencyWatcherSpringTests.this.dependencyWatcherListener.dependencyState)
+                        .isEqualTo(DependencyState.DISCONNECTED);
+                return true;
+            }
+        });
+    }
 
-	@Configuration
-	@EnableAutoConfiguration
-	@Profile("watcher")
-	static class Config {
+    @Configuration
+    @EnableAutoConfiguration
+    @Profile("watcher")
+    static class Config {
 
-		@Bean
-		@LoadBalanced
-		RestTemplate loadBalancedRestTemplate() {
-			return new RestTemplate();
-		}
+        @Bean
+        @LoadBalanced
+        RestTemplate loadBalancedRestTemplate() {
+            return new RestTemplate();
+        }
 
-		@Bean
-		static PropertySourcesPlaceholderConfigurer propertiesConfigurer() {
-			return new PropertySourcesPlaceholderConfigurer();
-		}
+        @Bean
+        static PropertySourcesPlaceholderConfigurer propertiesConfigurer() {
+            return new PropertySourcesPlaceholderConfigurer();
+        }
 
-		@Bean
-		DependencyWatcherListener dependencyWatcherListener() {
-			return new AssertableDependencyWatcherListener();
-		}
+        @Bean
+        DependencyWatcherListener dependencyWatcherListener() {
+            return new AssertableDependencyWatcherListener();
+        }
 
-		@Bean
-		DependencyPresenceOnStartupVerifier dependencyPresenceOnStartupVerifier() {
-			return new AssertableDependencyPresenceOnStartupVerifier();
-		}
+        @Bean
+        DependencyPresenceOnStartupVerifier dependencyPresenceOnStartupVerifier() {
+            return new AssertableDependencyPresenceOnStartupVerifier();
+        }
 
-	}
+    }
 
-	static class AssertableDependencyWatcherListener
-			implements DependencyWatcherListener {
+    static class AssertableDependencyWatcherListener
+            implements DependencyWatcherListener {
 
-		DependencyState dependencyState = DependencyState.CONNECTED;
+        DependencyState dependencyState = DependencyState.CONNECTED;
 
-		@Override
-		public void stateChanged(String dependencyName, DependencyState newState) {
-			dependencyState = newState;
-		}
+        @Override
+        public void stateChanged(String dependencyName, DependencyState newState) {
+            dependencyState = newState;
+        }
 
-	}
+    }
 
-	static class AssertableDependencyPresenceOnStartupVerifier
-			extends DependencyPresenceOnStartupVerifier {
+    static class AssertableDependencyPresenceOnStartupVerifier
+            extends DependencyPresenceOnStartupVerifier {
 
-		boolean startupPresenceVerified = false;
+        boolean startupPresenceVerified = false;
 
-		AssertableDependencyPresenceOnStartupVerifier() {
-			super(new LogMissingDependencyChecker());
-		}
+        AssertableDependencyPresenceOnStartupVerifier() {
+            super(new LogMissingDependencyChecker());
+        }
 
-		@Override
-		public void verifyDependencyPresence(String dependencyName,
-				ServiceCache serviceCache, boolean required) {
-			startupPresenceVerified = true;
-		}
+        @Override
+        public void verifyDependencyPresence(String dependencyName,
+                                                                ServiceCache serviceCache, boolean required) {
+            startupPresenceVerified = true;
+        }
 
-	}
+    }
 
 }

@@ -31,22 +31,22 @@ import org.springframework.web.client.RestTemplate;
 @Configuration
 public class CommonTestConfig {
 
-	@Bean
-	@LoadBalanced
-	RestTemplate loadBalancedRestTemplate() {
-		return new RestTemplate();
-	}
+    @Bean
+    @LoadBalanced
+    RestTemplate loadBalancedRestTemplate() {
+        return new RestTemplate();
+    }
 
-	@Bean(destroyMethod = "close")
-	TestingServer testingServer() throws Exception {
-		return new TestingServer(TestSocketUtils.findAvailableTcpPort());
-	}
+    @Bean(destroyMethod = "close")
+    TestingServer testingServer() throws Exception {
+        return new TestingServer(TestSocketUtils.findAvailableTcpPort());
+    }
 
-	@Bean
-	ZookeeperProperties zookeeperProperties(TestingServer testingServer) {
-		ZookeeperProperties zookeeperProperties = new ZookeeperProperties();
-		zookeeperProperties.setConnectString("localhost:" + testingServer.getPort());
-		return zookeeperProperties;
-	}
+    @Bean
+    ZookeeperProperties zookeeperProperties(TestingServer testingServer) {
+        ZookeeperProperties zookeeperProperties = new ZookeeperProperties();
+        zookeeperProperties.setConnectString("localhost:" + testingServer.getPort());
+        return zookeeperProperties;
+    }
 
 }

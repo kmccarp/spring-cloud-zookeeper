@@ -55,65 +55,65 @@ import static org.springframework.cloud.zookeeper.discovery.test.TestLoadBalance
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = ZookeeperDiscoveryHealthIndicatorWithNestedStructureTests.Config.class,
-		properties = "management.endpoints.web.exposure.include=*", webEnvironment = RANDOM_PORT)
+        properties = "management.endpoints.web.exposure.include=*", webEnvironment = RANDOM_PORT)
 @ActiveProfiles("nestedstructure")
 @ContextConfiguration(loader = ZookeeperTestingServer.Loader.class)
 public class ZookeeperDiscoveryHealthIndicatorWithNestedStructureTests {
 
-	private static final Log log = LogFactory.getLog(MethodHandles.lookup().lookupClass());
+    private static final Log log = LogFactory.getLog(MethodHandles.lookup().lookupClass());
 
-	@Autowired
-	TestLoadBalancedClient testLoadBalancedClient;
+    @Autowired
+    TestLoadBalancedClient testLoadBalancedClient;
 
-	@Autowired
-	CuratorFramework curatorFramework;
+    @Autowired
+    CuratorFramework curatorFramework;
 
-	// Issue: #54 - ZookeeperDiscoveryHealthIndicator fails on nested structure
-	@Test
-	public void should_return_a_response_that_app_is_in_a_healthy_state_when_nested_folders_in_zookeeper_are_present()
-			throws Exception {
-		// when:
-		String response = this.testLoadBalancedClient.callService("me", BASE_PATH + "/health");
-		// then:
-		log.info("Received response [" + response + "]");
-		then(this.curatorFramework.getChildren().forPath("/services/me")).isNotEmpty();
-		then(this.curatorFramework.getChildren().forPath("/services/a/b/c/d/anotherservice")).isNotEmpty();
-	}
+    // Issue: #54 - ZookeeperDiscoveryHealthIndicator fails on nested structure
+    @Test
+    public void should_return_a_response_that_app_is_in_a_healthy_state_when_nested_folders_in_zookeeper_are_present()
+            throws Exception {
+        // when:
+        String response = this.testLoadBalancedClient.callService("me", BASE_PATH + "/health");
+        // then:
+        log.info("Received response [" + response + "]");
+        then(this.curatorFramework.getChildren().forPath("/services/me")).isNotEmpty();
+        then(this.curatorFramework.getChildren().forPath("/services/a/b/c/d/anotherservice")).isNotEmpty();
+    }
 
-	@Configuration
-	@EnableAutoConfiguration
-	@Import(CommonTestConfig.class)
-	@Profile("nestedstructure")
-	static class Config {
+    @Configuration
+    @EnableAutoConfiguration
+    @Import(CommonTestConfig.class)
+    @Profile("nestedstructure")
+    static class Config {
 
-		@Autowired
-		ZookeeperServiceRegistry serviceRegistry;
+        @Autowired
+        ZookeeperServiceRegistry serviceRegistry;
 
-		private ZookeeperRegistration registration;
+        private ZookeeperRegistration registration;
 
-		@PostConstruct
-		void registerNestedDependency() {
-			try {
-				this.registration = ServiceInstanceRegistration.builder().defaultUriSpec().address("anyUrl").port(10)
-						.name("/a/b/c/d/anotherservice").build();
-				this.serviceRegistry.register(registration);
-			}
-			catch (Exception e) {
-				throw new RuntimeException(e);
-			}
-		}
+        @PostConstruct
+        void registerNestedDependency() {
+            try {
+                this.registration = ServiceInstanceRegistration.builder().defaultUriSpec().address("anyUrl").port(10)
+                        .name("/a/b/c/d/anotherservice").build();
+                this.serviceRegistry.register(registration);
+            }
+            catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
 
-		@PreDestroy
-		void unregisterServiceDiscovery() {
-			this.serviceRegistry.deregister(this.registration);
-		}
+        @PreDestroy
+        void unregisterServiceDiscovery() {
+            this.serviceRegistry.deregister(this.registration);
+        }
 
-		@Bean
-		TestLoadBalancedClient testLoadBalancedClient(@LoadBalanced RestTemplate restTemplate,
-				@Value("${spring.application.name}") String springAppName) {
-			return new TestLoadBalancedClient(restTemplate, springAppName);
-		}
+        @Bean
+        TestLoadBalancedClient testLoadBalancedClient(@LoadBalanced RestTemplate restTemplate,
+                                                                     @Value("${spring.application.name}") String springAppName) {
+            return new TestLoadBalancedClient(restTemplate, springAppName);
+        }
 
-	}
+    }
 
 }

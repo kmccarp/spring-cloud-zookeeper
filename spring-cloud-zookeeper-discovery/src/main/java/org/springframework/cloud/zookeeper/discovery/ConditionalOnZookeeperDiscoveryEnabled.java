@@ -31,12 +31,12 @@ import org.springframework.cloud.zookeeper.ConditionalOnZookeeperEnabled;
  * @since 1.1.0
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.TYPE, ElementType.METHOD })
+@Target({ElementType.TYPE, ElementType.METHOD})
 @ConditionalOnZookeeperEnabled
 @ConditionalOnProperty(value = ConditionalOnZookeeperDiscoveryEnabled.PROPERTY, matchIfMissing = true)
 public @interface ConditionalOnZookeeperDiscoveryEnabled {
-	/**
-	 * Property name.
-	 */
-	String PROPERTY = "spring.cloud.zookeeper.discovery.enabled";
+    /**
+     * Property name.
+     */
+    String PROPERTY = "spring.cloud.zookeeper.discovery.enabled";
 }

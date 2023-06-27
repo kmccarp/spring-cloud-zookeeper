@@ -30,26 +30,26 @@ import static org.assertj.core.api.BDDAssertions.then;
 @RunWith(Parameterized.class)
 public class ZookeeperDiscoveryPropertiesTests {
 
-	private String root;
+    private String root;
 
-	public ZookeeperDiscoveryPropertiesTests(String root) {
-		this.root = root;
-	}
+    public ZookeeperDiscoveryPropertiesTests(String root) {
+        this.root = root;
+    }
 
-	@Parameterized.Parameters(name = "With root {0}")
-	public static Iterable<String> rootVariations() {
-		return Arrays.asList("es", "es/", "/es");
-	}
+    @Parameterized.Parameters(name = "With root {0}")
+    public static Iterable<String> rootVariations() {
+        return Arrays.asList("es", "es/", "/es");
+    }
 
-	@Test
-	public void should_escape_root() {
-		// given:
-		ZookeeperDiscoveryProperties zookeeperDiscoveryProperties = new ZookeeperDiscoveryProperties(
-				new InetUtils(new InetUtilsProperties()));
-		// when:
-		zookeeperDiscoveryProperties.setRoot(root);
-		// then:
-		then(zookeeperDiscoveryProperties.getRoot()).isEqualTo("/es");
-	}
+    @Test
+    public void should_escape_root() {
+        // given:
+        ZookeeperDiscoveryProperties zookeeperDiscoveryProperties = new ZookeeperDiscoveryProperties(
+                new InetUtils(new InetUtilsProperties()));
+        // when:
+        zookeeperDiscoveryProperties.setRoot(root);
+        // then:
+        then(zookeeperDiscoveryProperties.getRoot()).isEqualTo("/es");
+    }
 
 }

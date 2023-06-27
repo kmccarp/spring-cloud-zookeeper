@@ -43,81 +43,81 @@ import org.springframework.cloud.zookeeper.discovery.dependency.ZookeeperDepende
  */
 public class ZookeeperReactiveDiscoveryClient implements ReactiveDiscoveryClient {
 
-	private static final Logger logger = LoggerFactory.getLogger(ZookeeperReactiveDiscoveryClient.class);
+    private static final Logger logger = LoggerFactory.getLogger(ZookeeperReactiveDiscoveryClient.class);
 
-	private final ServiceDiscovery<ZookeeperInstance> serviceDiscovery;
+    private final ServiceDiscovery<ZookeeperInstance> serviceDiscovery;
 
-	private final ZookeeperDependencies zookeeperDependencies;
+    private final ZookeeperDependencies zookeeperDependencies;
 
-	private final ZookeeperDiscoveryProperties zookeeperDiscoveryProperties;
+    private final ZookeeperDiscoveryProperties zookeeperDiscoveryProperties;
 
-	public ZookeeperReactiveDiscoveryClient(ServiceDiscovery<ZookeeperInstance> serviceDiscovery,
-			ZookeeperDependencies zookeeperDependencies, ZookeeperDiscoveryProperties zookeeperDiscoveryProperties) {
-		this.serviceDiscovery = serviceDiscovery;
-		this.zookeeperDependencies = zookeeperDependencies;
-		this.zookeeperDiscoveryProperties = zookeeperDiscoveryProperties;
-	}
+    public ZookeeperReactiveDiscoveryClient(ServiceDiscovery<ZookeeperInstance> serviceDiscovery,
+                                             ZookeeperDependencies zookeeperDependencies, ZookeeperDiscoveryProperties zookeeperDiscoveryProperties) {
+        this.serviceDiscovery = serviceDiscovery;
+        this.zookeeperDependencies = zookeeperDependencies;
+        this.zookeeperDiscoveryProperties = zookeeperDiscoveryProperties;
+    }
 
-	@Override
-	public String description() {
-		return "Spring Cloud Zookeeper Reactive Discovery Client";
-	}
+    @Override
+    public String description() {
+        return "Spring Cloud Zookeeper Reactive Discovery Client";
+    }
 
-	@Override
-	public Flux<ServiceInstance> getInstances(String serviceId) {
-		String serviceIdToQuery = serviceIdToQuery(serviceId);
-		return Mono.justOrEmpty(serviceIdToQuery)
-				.flatMapMany(getInstancesFromZookeeper())
-				.subscribeOn(Schedulers.boundedElastic())
-				.map(zkInstance -> toZookeeperServiceInstance(serviceIdToQuery, zkInstance));
-	}
+    @Override
+    public Flux<ServiceInstance> getInstances(String serviceId) {
+        String serviceIdToQuery = serviceIdToQuery(serviceId);
+        return Mono.justOrEmpty(serviceIdToQuery)
+                .flatMapMany(getInstancesFromZookeeper())
+                .subscribeOn(Schedulers.boundedElastic())
+                .map(zkInstance -> toZookeeperServiceInstance(serviceIdToQuery, zkInstance));
+    }
 
-	private Function<String, Publisher<org.apache.curator.x.discovery.ServiceInstance<ZookeeperInstance>>> getInstancesFromZookeeper() {
-		return service -> {
-			try {
-				return Flux.fromIterable(serviceDiscovery.queryForInstances(service));
-			}
-			catch (Exception e) {
-				logger.error("Error getting instances from zookeeper. Possibly, no service has registered.", e);
-				return Flux.empty();
-			}
-		};
-	}
+    private Function<String, Publisher<org.apache.curator.x.discovery.ServiceInstance<ZookeeperInstance>>> getInstancesFromZookeeper() {
+        return service -> {
+            try {
+                return Flux.fromIterable(serviceDiscovery.queryForInstances(service));
+            }
+            catch (Exception e) {
+                logger.error("Error getting instances from zookeeper. Possibly, no service has registered.", e);
+                return Flux.empty();
+            }
+        };
+    }
 
-	private ZookeeperServiceInstance toZookeeperServiceInstance(String serviceId,
-			org.apache.curator.x.discovery.ServiceInstance<ZookeeperInstance> zkInstanceServiceInstance) {
-		return new ZookeeperServiceInstance(serviceId, zkInstanceServiceInstance);
-	}
+    private ZookeeperServiceInstance toZookeeperServiceInstance(String serviceId,
+                                                                 org.apache.curator.x.discovery.ServiceInstance<ZookeeperInstance> zkInstanceServiceInstance) {
+        return new ZookeeperServiceInstance(serviceId, zkInstanceServiceInstance);
+    }
 
-	@Override
-	public Flux<String> getServices() {
-		return Flux.defer(getServicesFromZookeeper())
-				.subscribeOn(Schedulers.boundedElastic());
-	}
+    @Override
+    public Flux<String> getServices() {
+        return Flux.defer(getServicesFromZookeeper())
+                .subscribeOn(Schedulers.boundedElastic());
+    }
 
-	private Supplier<Publisher<String>> getServicesFromZookeeper() {
-		return () -> {
-					try {
-						return Flux.fromIterable(serviceDiscovery.queryForNames());
-					}
-					catch (Exception e) {
-						logger.error("Error getting services from zookeeper. Possibly, no service has registered.", e);
-						return Flux.empty();
-					}
-				};
-	}
+    private Supplier<Publisher<String>> getServicesFromZookeeper() {
+        return () -> {
+            try {
+                return Flux.fromIterable(serviceDiscovery.queryForNames());
+            }
+            catch (Exception e) {
+                logger.error("Error getting services from zookeeper. Possibly, no service has registered.", e);
+                return Flux.empty();
+            }
+        };
+    }
 
-	private String serviceIdToQuery(String serviceId) {
-		if (zookeeperDependencies != null
-				&& zookeeperDependencies.hasDependencies()) {
-			String pathForAlias = zookeeperDependencies.getPathForAlias(serviceId);
-			return pathForAlias.isEmpty() ? serviceId : pathForAlias;
-		}
-		return serviceId;
-	}
+    private String serviceIdToQuery(String serviceId) {
+        if (zookeeperDependencies != null
+                && zookeeperDependencies.hasDependencies()) {
+            String pathForAlias = zookeeperDependencies.getPathForAlias(serviceId);
+            return pathForAlias.isEmpty() ? serviceId : pathForAlias;
+        }
+        return serviceId;
+    }
 
-	@Override
-	public int getOrder() {
-		return zookeeperDiscoveryProperties.getOrder();
-	}
+    @Override
+    public int getOrder() {
+        return zookeeperDiscoveryProperties.getOrder();
+    }
 }

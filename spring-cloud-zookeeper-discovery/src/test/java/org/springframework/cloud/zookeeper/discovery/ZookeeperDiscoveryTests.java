@@ -61,133 +61,133 @@ import static org.springframework.cloud.zookeeper.discovery.test.TestLoadBalance
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = ZookeeperDiscoveryTests.Config.class, properties = {
-		"spring.cloud.zookeeper.discovery.uri-spec={scheme}://{address}:{port}/contextPath",
-		"management.endpoints.web.exposure.include=*" }, webEnvironment = RANDOM_PORT)
+        "spring.cloud.zookeeper.discovery.uri-spec={scheme}://{address}:{port}/contextPath",
+        "management.endpoints.web.exposure.include=*"}, webEnvironment = RANDOM_PORT)
 @ActiveProfiles("loadbalancer")
 @DirtiesContext
 @ContextConfiguration(loader = ZookeeperTestingServer.Loader.class)
 public class ZookeeperDiscoveryTests {
 
-	@Autowired
-	TestLoadBalancedClient testLoadBalancedClient;
+    @Autowired
+    TestLoadBalancedClient testLoadBalancedClient;
 
-	@Autowired
-	DiscoveryClient discoveryClient;
+    @Autowired
+    DiscoveryClient discoveryClient;
 
-	@Autowired
-	ServiceInstanceRegistration serviceDiscovery;
+    @Autowired
+    ServiceInstanceRegistration serviceDiscovery;
 
-	@Value("${spring.application.name}")
-	String springAppName;
+    @Value("${spring.application.name}")
+    String springAppName;
 
-	@Autowired
-	IdUsingFeignClient idUsingFeignClient;
+    @Autowired
+    IdUsingFeignClient idUsingFeignClient;
 
-	@Autowired
-	Registration registration;
+    @Autowired
+    Registration registration;
 
-	@Test
-	public void should_find_the_app_by_its_name_via_LoadBalancer() {
-		// expect:
-		then(registeredServiceStatusViaServiceName()).isEqualTo("UP");
-	}
+    @Test
+    public void should_find_the_app_by_its_name_via_LoadBalancer() {
+        // expect:
+        then(registeredServiceStatusViaServiceName()).isEqualTo("UP");
+    }
 
-	@Test
-	public void should_find_a_collaborator_via_discovery_client() {
-		// given:
-		List<ServiceInstance> instances = this.discoveryClient
-				.getInstances(this.springAppName);
-		ServiceInstance instance = instances.get(0);
-		// expect:
-		then(registeredServiceStatus(instance)).isEqualTo("UP");
-		then(instance.getInstanceId()).isEqualTo("loadbalancer-instance-id-123");
-		then(instance.getMetadata().get("testMetadataKey"))
-				.isEqualTo("testMetadataValue");
-		then(instance).isInstanceOf(ZookeeperServiceInstance.class);
-		ZookeeperServiceInstance zkInstance = (ZookeeperServiceInstance) instance;
-		then(zkInstance.getServiceInstance().getId()).isEqualTo("loadbalancer-instance-id-123");
-	}
+    @Test
+    public void should_find_a_collaborator_via_discovery_client() {
+        // given:
+        List<ServiceInstance> instances = this.discoveryClient
+                .getInstances(this.springAppName);
+        ServiceInstance instance = instances.get(0);
+        // expect:
+        then(registeredServiceStatus(instance)).isEqualTo("UP");
+        then(instance.getInstanceId()).isEqualTo("loadbalancer-instance-id-123");
+        then(instance.getMetadata().get("testMetadataKey"))
+                .isEqualTo("testMetadataValue");
+        then(instance).isInstanceOf(ZookeeperServiceInstance.class);
+        ZookeeperServiceInstance zkInstance = (ZookeeperServiceInstance)instance;
+        then(zkInstance.getServiceInstance().getId()).isEqualTo("loadbalancer-instance-id-123");
+    }
 
-	@Test
-	public void should_present_application_name_as_id_of_the_service_instance() {
-		// given:
-		// expect:
-		then(this.springAppName).isEqualTo(this.registration.getServiceId());
-	}
+    @Test
+    public void should_present_application_name_as_id_of_the_service_instance() {
+        // given:
+        // expect:
+        then(this.springAppName).isEqualTo(this.registration.getServiceId());
+    }
 
-	@Test
-	public void should_service_instance_uri_match_uriSpec() {
-		// given:
-		// expect:
-		then(this.registration.getUri()).hasPath("/contextPath");
-	}
+    @Test
+    public void should_service_instance_uri_match_uriSpec() {
+        // given:
+        // expect:
+        then(this.registration.getUri()).hasPath("/contextPath");
+    }
 
-	@Test
-	public void should_find_an_instance_using_feign_via_service_id() {
-		final IdUsingFeignClient idUsingFeignClient = this.idUsingFeignClient;
-		// expect:
-		Awaitility.await().until(() -> {
-			then(idUsingFeignClient.hi()).isNotEmpty();
-			return true;
-		});
-	}
+    @Test
+    public void should_find_an_instance_using_feign_via_service_id() {
+        final IdUsingFeignClient idUsingFeignClient = this.idUsingFeignClient;
+        // expect:
+        Awaitility.await().until(() -> {
+            then(idUsingFeignClient.hi()).isNotEmpty();
+            return true;
+        });
+    }
 
-	private String registeredServiceStatusViaServiceName() {
-		return JsonPath.builder(this.testLoadBalancedClient.thisHealthCheck()).field("status")
-				.read(String.class);
-	}
+    private String registeredServiceStatusViaServiceName() {
+        return JsonPath.builder(this.testLoadBalancedClient.thisHealthCheck()).field("status")
+                .read(String.class);
+    }
 
-	private String registeredServiceStatus(ServiceInstance instance) {
-		return JsonPath.builder(this.testLoadBalancedClient.callOnUrl(
-				instance.getHost() + ":" + instance.getPort(), BASE_PATH + "/health"))
-				.field("status").read(String.class);
-	}
+    private String registeredServiceStatus(ServiceInstance instance) {
+        return JsonPath.builder(this.testLoadBalancedClient.callOnUrl(
+                instance.getHost() + ":" + instance.getPort(), BASE_PATH + "/health"))
+                .field("status").read(String.class);
+    }
 
-	@Test
-	public void should_properly_find_local_instance() {
-		// expect:
-		then(this.serviceDiscovery.getServiceInstance().getAddress())
-				.isEqualTo(this.registration.getHost());
-	}
+    @Test
+    public void should_properly_find_local_instance() {
+        // expect:
+        then(this.serviceDiscovery.getServiceInstance().getAddress())
+                .isEqualTo(this.registration.getHost());
+    }
 
-	@FeignClient("loadBalancerApp")
-	public interface IdUsingFeignClient {
+    @FeignClient("loadBalancerApp")
+    public interface IdUsingFeignClient {
 
-		@RequestMapping(method = RequestMethod.GET, value = "/hi")
-		String hi();
+        @RequestMapping(method = RequestMethod.GET, value = "/hi")
+        String hi();
 
-	}
+    }
 
-	@Configuration
-	@EnableAutoConfiguration
-	@Import(CommonTestConfig.class)
-	@EnableFeignClients(clients = { IdUsingFeignClient.class })
-	@Profile("loadbalancer")
-	@RestController
-	static class Config {
+    @Configuration
+    @EnableAutoConfiguration
+    @Import(CommonTestConfig.class)
+    @EnableFeignClients(clients = {IdUsingFeignClient.class})
+    @Profile("loadbalancer")
+    @RestController
+    static class Config {
 
-		@Bean
-		TestLoadBalancedClient testLoadBalancedClient(@LoadBalanced RestTemplate restTemplate,
-				@Value("${spring.application.name}") String springAppName) {
-			return new TestLoadBalancedClient(restTemplate, springAppName);
-		}
+        @Bean
+        TestLoadBalancedClient testLoadBalancedClient(@LoadBalanced RestTemplate restTemplate,
+                                                                     @Value("${spring.application.name}") String springAppName) {
+            return new TestLoadBalancedClient(restTemplate, springAppName);
+        }
 
-		@RequestMapping("/hi")
-		public String hi() {
-			return "hi";
-		}
+        @RequestMapping("/hi")
+        public String hi() {
+            return "hi";
+        }
 
-	}
+    }
 
-	@Controller
-	@Profile("loadbalancer")
-	class PingController {
+    @Controller
+    @Profile("loadbalancer")
+    class PingController {
 
-		@RequestMapping("/ping")
-		String ping() {
-			return "pong";
-		}
+        @RequestMapping("/ping")
+        String ping() {
+            return "pong";
+        }
 
-	}
+    }
 
 }

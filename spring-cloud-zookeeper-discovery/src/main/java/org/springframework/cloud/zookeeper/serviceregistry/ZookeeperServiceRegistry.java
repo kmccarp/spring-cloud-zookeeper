@@ -38,111 +38,111 @@ import static org.springframework.util.ReflectionUtils.rethrowRuntimeException;
  * @author Spencer Gibb
  */
 public class ZookeeperServiceRegistry implements ServiceRegistry<ZookeeperRegistration>,
-		SmartInitializingSingleton, Closeable {
+        SmartInitializingSingleton, Closeable {
 
-	// private AtomicBoolean started = new AtomicBoolean();
+    // private AtomicBoolean started = new AtomicBoolean();
 
-	protected CuratorFramework curator;
+    protected CuratorFramework curator;
 
-	protected ZookeeperDiscoveryProperties properties;
+    protected ZookeeperDiscoveryProperties properties;
 
-	// protected InstanceSerializer<ZookeeperInstance> instanceSerializer;
-	private ServiceDiscovery<ZookeeperInstance> serviceDiscovery;
+    // protected InstanceSerializer<ZookeeperInstance> instanceSerializer;
+    private ServiceDiscovery<ZookeeperInstance> serviceDiscovery;
 
-	public ZookeeperServiceRegistry(
-			ServiceDiscovery<ZookeeperInstance> serviceDiscovery) {
-		this.serviceDiscovery = serviceDiscovery;
-	}
+    public ZookeeperServiceRegistry(
+            ServiceDiscovery<ZookeeperInstance> serviceDiscovery) {
+        this.serviceDiscovery = serviceDiscovery;
+    }
 
-	/**
-	 * TODO: add when ZookeeperServiceDiscovery is removed One can override this method to
-	 * provide custom way of registering {@link ServiceDiscovery}
-	 */
-	/*
-	 * private void configureServiceDiscovery() {
-	 * this.zookeeperServiceDiscovery.configureServiceDiscovery(this.
-	 * zookeeperServiceDiscovery.getServiceDiscoveryRef(), this.curator, this.properties,
-	 * this.instanceSerializer, this.zookeeperServiceDiscovery.getServiceInstanceRef()); }
-	 */
+    /**
+     * TODO: add when ZookeeperServiceDiscovery is removed One can override this method to
+     * provide custom way of registering {@link ServiceDiscovery}
+     */
+    /*
+     * private void configureServiceDiscovery() {
+     * this.zookeeperServiceDiscovery.configureServiceDiscovery(this.
+     * zookeeperServiceDiscovery.getServiceDiscoveryRef(), this.curator, this.properties,
+     * this.instanceSerializer, this.zookeeperServiceDiscovery.getServiceInstanceRef()); }
+     */
 
-	@Override
-	public void register(ZookeeperRegistration registration) {
-		try {
-			getServiceDiscovery().registerService(registration.getServiceInstance());
-		}
-		catch (Exception e) {
-			rethrowRuntimeException(e);
-		}
-	}
+    @Override
+    public void register(ZookeeperRegistration registration) {
+        try {
+            getServiceDiscovery().registerService(registration.getServiceInstance());
+        }
+        catch (Exception e) {
+            rethrowRuntimeException(e);
+        }
+    }
 
-	private ServiceDiscovery<ZookeeperInstance> getServiceDiscovery() {
-		return this.serviceDiscovery;
-	}
+    private ServiceDiscovery<ZookeeperInstance> getServiceDiscovery() {
+        return this.serviceDiscovery;
+    }
 
-	@Override
-	public void deregister(ZookeeperRegistration registration) {
-		try {
-			getServiceDiscovery().unregisterService(registration.getServiceInstance());
-		}
-		catch (Exception e) {
-			rethrowRuntimeException(e);
-		}
-	}
+    @Override
+    public void deregister(ZookeeperRegistration registration) {
+        try {
+            getServiceDiscovery().unregisterService(registration.getServiceInstance());
+        }
+        catch (Exception e) {
+            rethrowRuntimeException(e);
+        }
+    }
 
-	@Override
-	public void afterSingletonsInstantiated() {
-		try {
-			getServiceDiscovery().start();
-		}
-		catch (Exception e) {
-			rethrowRuntimeException(e);
-		}
-	}
+    @Override
+    public void afterSingletonsInstantiated() {
+        try {
+            getServiceDiscovery().start();
+        }
+        catch (Exception e) {
+            rethrowRuntimeException(e);
+        }
+    }
 
-	@Override
-	public void close() {
-		try {
-			getServiceDiscovery().close();
-		}
-		catch (IOException e) {
-			rethrowRuntimeException(e);
-		}
-	}
+    @Override
+    public void close() {
+        try {
+            getServiceDiscovery().close();
+        }
+        catch (IOException e) {
+            rethrowRuntimeException(e);
+        }
+    }
 
-	@Override
-	public void setStatus(ZookeeperRegistration registration, String status) {
-		ServiceInstance<ZookeeperInstance> serviceInstance = registration
-				.getServiceInstance();
-		ZookeeperInstance instance = serviceInstance.getPayload();
-		instance.getMetadata().put(INSTANCE_STATUS_KEY, status);
-		try {
-			getServiceDiscovery().updateService(serviceInstance);
-		}
-		catch (Exception e) {
-			ReflectionUtils.rethrowRuntimeException(e);
-		}
-	}
+    @Override
+    public void setStatus(ZookeeperRegistration registration, String status) {
+        ServiceInstance<ZookeeperInstance> serviceInstance = registration
+                .getServiceInstance();
+        ZookeeperInstance instance = serviceInstance.getPayload();
+        instance.getMetadata().put(INSTANCE_STATUS_KEY, status);
+        try {
+            getServiceDiscovery().updateService(serviceInstance);
+        }
+        catch (Exception e) {
+            ReflectionUtils.rethrowRuntimeException(e);
+        }
+    }
 
-	@Override
-	public Object getStatus(ZookeeperRegistration registration) {
-		ZookeeperInstance instance = registration.getServiceInstance().getPayload();
-		String instanceStatus = instance.getMetadata().get(INSTANCE_STATUS_KEY);
+    @Override
+    public Object getStatus(ZookeeperRegistration registration) {
+        ZookeeperInstance instance = registration.getServiceInstance().getPayload();
+        String instanceStatus = instance.getMetadata().get(INSTANCE_STATUS_KEY);
 
-		if (!StringUtils.hasText(instanceStatus)) {
-			instanceStatus = STATUS_UP;
-		}
-		return instanceStatus;
-	}
+        if (!StringUtils.hasText(instanceStatus)) {
+            instanceStatus = STATUS_UP;
+        }
+        return instanceStatus;
+    }
 
-	@Deprecated
-	protected CuratorFramework getCurator() {
-		return this.curator;
-	}
+    @Deprecated
+    protected CuratorFramework getCurator() {
+        return this.curator;
+    }
 
-	/*
-	 * protected AtomicReference<ServiceDiscovery<ZookeeperInstance>>
-	 * getServiceDiscoveryRef() { return
-	 * this.zookeeperServiceDiscovery.getServiceDiscoveryRef(); }
-	 */
+    /*
+     * protected AtomicReference<ServiceDiscovery<ZookeeperInstance>>
+     * getServiceDiscoveryRef() { return
+     * this.zookeeperServiceDiscovery.getServiceDiscoveryRef(); }
+     */
 
 }

@@ -45,121 +45,122 @@ import static org.mockito.Mockito.mock;
 
 public class ZookeeperConfigServerBootstrapperTests {
 
-	private ConfigurableApplicationContext context;
+    private ConfigurableApplicationContext context;
 
-	@AfterEach
-	public void after() {
-		if (context != null) {
-			context.close();
-		}
-	}
+    @AfterEach
+    public void after() {
+        if (context != null) {
+            context.close();
+        }
+    }
 
-	@Test
-	public void notEnabledReturnsEmptyList() {
-		ConfigurableApplicationContext context = new SpringApplicationBuilder(TestConfig.class)
-				.listeners(new ZookeeperTestingServer())
-				.properties("--server.port=0", "spring.cloud.service-registry.auto-registration.enabled=false")
-				.addBootstrapRegistryInitializer(registry -> registry.addCloseListener(event -> {
-					ConfigServerInstanceProvider.Function providerFn = event.getBootstrapContext()
-							.get(ConfigServerInstanceProvider.Function.class);
-					Log log = mock(Log.class);
-					assertThat(providerFn.apply("id", event.getBootstrapContext().get(Binder.class), event.getBootstrapContext().get(BindHandler.class), log)).as("ConfigServerInstanceProvider.Function should return empty list")
-							.isEmpty();
-				})).run();
-		CuratorFramework curatorFramework = context.getBean("curatorFramework", CuratorFramework.class);
-		assertThat(curatorFramework).isNotNull();
-		assertThatThrownBy(() ->
-		context.getBean("configDataCuratorFramework", CuratorFramework.class)).isInstanceOf(NoSuchBeanDefinitionException.class);
-		context.close();
-	}
+    @Test
+    public void notEnabledReturnsEmptyList() {
+        ConfigurableApplicationContext context = new SpringApplicationBuilder(TestConfig.class)
+                .listeners(new ZookeeperTestingServer())
+                .properties("--server.port=0", "spring.cloud.service-registry.auto-registration.enabled=false")
+                .addBootstrapRegistryInitializer(registry -> registry.addCloseListener(event -> {
+                    ConfigServerInstanceProvider.Function providerFn = event.getBootstrapContext()
+                            .get(ConfigServerInstanceProvider.Function.class);
+                    Log log = mock(Log.class);
+                    assertThat(providerFn.apply("id", event.getBootstrapContext().get(Binder.class), event.getBootstrapContext().get(BindHandler.class), log)).as("ConfigServerInstanceProvider.Function should return empty list")
+                            .isEmpty();
+                })).run();
+        CuratorFramework curatorFramework = context.getBean("curatorFramework", CuratorFramework.class);
+        assertThat(curatorFramework).isNotNull();
+        assertThatThrownBy(() ->
+                context.getBean("configDataCuratorFramework", CuratorFramework.class)).isInstanceOf(NoSuchBeanDefinitionException.class);
+        context.close();
+    }
 
-	@Test
-	public void zookeeperDiscoveryClientDisabledReturnsEmptyList() {
-		ConfigurableApplicationContext context = new SpringApplicationBuilder(TestConfig.class)
-				.listeners(new ZookeeperTestingServer())
-				.properties("--server.port=0", "spring.cloud.config.discovery.enabled=true",
-						"spring.cloud.zookeeper.discovery.enabled=false",
-						"spring.cloud.zookeeper.discovery.metadata[mymetadataprop]=mymetadataval",
-						"spring.cloud.service-registry.auto-registration.enabled=false")
-				.addBootstrapRegistryInitializer(registry -> registry.addCloseListener(event -> {
-					ConfigServerInstanceProvider.Function providerFn = event.getBootstrapContext()
-							.get(ConfigServerInstanceProvider.Function.class);
-					Log log = mock(Log.class);
-					assertThat(providerFn.apply("id", event.getBootstrapContext().get(Binder.class), event.getBootstrapContext().get(BindHandler.class), log)).as("ConfigServerInstanceProvider.Function should return empty list")
-							.isEmpty();
-				})).run();
-		CuratorFramework curatorFramework = context.getBean("curatorFramework", CuratorFramework.class);
-		assertThat(curatorFramework).isNotNull();
-		assertThatThrownBy(() ->
-				context.getBean("configDataCuratorFramework", CuratorFramework.class)).isInstanceOf(NoSuchBeanDefinitionException.class);
-		context.close();
-	}
+    @Test
+    public void zookeeperDiscoveryClientDisabledReturnsEmptyList() {
+        ConfigurableApplicationContext context = new SpringApplicationBuilder(TestConfig.class)
+                .listeners(new ZookeeperTestingServer())
+                .properties("--server.port=0", "spring.cloud.config.discovery.enabled=true",
+                        "spring.cloud.zookeeper.discovery.enabled=false",
+                        "spring.cloud.zookeeper.discovery.metadata[mymetadataprop]=mymetadataval",
+                        "spring.cloud.service-registry.auto-registration.enabled=false")
+                .addBootstrapRegistryInitializer(registry -> registry.addCloseListener(event -> {
+                    ConfigServerInstanceProvider.Function providerFn = event.getBootstrapContext()
+                            .get(ConfigServerInstanceProvider.Function.class);
+                    Log log = mock(Log.class);
+                    assertThat(providerFn.apply("id", event.getBootstrapContext().get(Binder.class), event.getBootstrapContext().get(BindHandler.class), log)).as("ConfigServerInstanceProvider.Function should return empty list")
+                            .isEmpty();
+                })).run();
+        CuratorFramework curatorFramework = context.getBean("curatorFramework", CuratorFramework.class);
+        assertThat(curatorFramework).isNotNull();
+        assertThatThrownBy(() ->
+                context.getBean("configDataCuratorFramework", CuratorFramework.class)).isInstanceOf(NoSuchBeanDefinitionException.class);
+        context.close();
+    }
 
-	@Test
-	public void discoveryClientDisabledReturnsEmptyList() {
-		ConfigurableApplicationContext context = new SpringApplicationBuilder(TestConfig.class)
-				.listeners(new ZookeeperTestingServer())
-				.properties("--server.port=0", "spring.cloud.config.discovery.enabled=true",
-						"spring.cloud.discovery.enabled=false",
-						"spring.cloud.zookeeper.discovery.metadata[mymetadataprop]=mymetadataval",
-						"spring.cloud.service-registry.auto-registration.enabled=false")
-				.addBootstrapRegistryInitializer(registry -> registry.addCloseListener(event -> {
-					ConfigServerInstanceProvider.Function providerFn = event.getBootstrapContext()
-							.get(ConfigServerInstanceProvider.Function.class);
-					assertThat(providerFn.apply("id", event.getBootstrapContext().get(Binder.class), event.getBootstrapContext().get(BindHandler.class), mock(Log.class))).as("ConfigServerInstanceProvider.Function should return empty list")
-							.isEmpty();
-				})).run();
-		CuratorFramework curatorFramework = context.getBean("curatorFramework", CuratorFramework.class);
-		assertThat(curatorFramework).isNotNull();
-		assertThatThrownBy(() ->
-				context.getBean("configDataCuratorFramework", CuratorFramework.class)).isInstanceOf(NoSuchBeanDefinitionException.class);
-		context.close();
-	}
+    @Test
+    public void discoveryClientDisabledReturnsEmptyList() {
+        ConfigurableApplicationContext context = new SpringApplicationBuilder(TestConfig.class)
+                .listeners(new ZookeeperTestingServer())
+                .properties("--server.port=0", "spring.cloud.config.discovery.enabled=true",
+                        "spring.cloud.discovery.enabled=false",
+                        "spring.cloud.zookeeper.discovery.metadata[mymetadataprop]=mymetadataval",
+                        "spring.cloud.service-registry.auto-registration.enabled=false")
+                .addBootstrapRegistryInitializer(registry -> registry.addCloseListener(event -> {
+                    ConfigServerInstanceProvider.Function providerFn = event.getBootstrapContext()
+                            .get(ConfigServerInstanceProvider.Function.class);
+                    assertThat(providerFn.apply("id", event.getBootstrapContext().get(Binder.class), event.getBootstrapContext().get(BindHandler.class), mock(Log.class))).as("ConfigServerInstanceProvider.Function should return empty list")
+                            .isEmpty();
+                })).run();
+        CuratorFramework curatorFramework = context.getBean("curatorFramework", CuratorFramework.class);
+        assertThat(curatorFramework).isNotNull();
+        assertThatThrownBy(() ->
+                context.getBean("configDataCuratorFramework", CuratorFramework.class)).isInstanceOf(NoSuchBeanDefinitionException.class);
+        context.close();
+    }
 
-	@Test
-	public void enabledAddsInstanceProviderFn() {
-		AtomicReference<ZookeeperDiscoveryClient> bootstrapDiscoveryClient = new AtomicReference<>();
-		BindHandlerBootstrapper bindHandlerBootstrapper = new BindHandlerBootstrapper();
-		context = new SpringApplicationBuilder(TestConfig.class)
-				.listeners(new ZookeeperTestingServer())
-				.properties("--server.port=0", "spring.cloud.config.discovery.enabled=true",
-						"spring.cloud.zookeeper.discovery.metadata[mymetadataprop]=mymetadataval",
-						"spring.cloud.service-registry.auto-registration.enabled=false")
-				.addBootstrapRegistryInitializer(bindHandlerBootstrapper)
-				.addBootstrapRegistryInitializer(registry -> registry.addCloseListener(event -> {
-					ConfigServerInstanceProvider.Function providerFn = event.getBootstrapContext()
-							.get(ConfigServerInstanceProvider.Function.class);
-					assertThat(providerFn.apply("id", event.getBootstrapContext().get(Binder.class), event.getBootstrapContext().get(BindHandler.class), mock(Log.class))).as("Should return empty list.")
-							.isNotNull();
-					bootstrapDiscoveryClient.set(event.getBootstrapContext().get(ZookeeperDiscoveryClient.class));
-				})).run();
+    @Test
+    public void enabledAddsInstanceProviderFn() {
+        AtomicReference<ZookeeperDiscoveryClient> bootstrapDiscoveryClient = new AtomicReference<>();
+        BindHandlerBootstrapper bindHandlerBootstrapper = new BindHandlerBootstrapper();
+        context = new SpringApplicationBuilder(TestConfig.class)
+                .listeners(new ZookeeperTestingServer())
+                .properties("--server.port=0", "spring.cloud.config.discovery.enabled=true",
+                        "spring.cloud.zookeeper.discovery.metadata[mymetadataprop]=mymetadataval",
+                        "spring.cloud.service-registry.auto-registration.enabled=false")
+                .addBootstrapRegistryInitializer(bindHandlerBootstrapper)
+                .addBootstrapRegistryInitializer(registry -> registry.addCloseListener(event -> {
+                    ConfigServerInstanceProvider.Function providerFn = event.getBootstrapContext()
+                            .get(ConfigServerInstanceProvider.Function.class);
+                    assertThat(providerFn.apply("id", event.getBootstrapContext().get(Binder.class), event.getBootstrapContext().get(BindHandler.class), mock(Log.class))).as("Should return empty list.")
+                            .isNotNull();
+                    bootstrapDiscoveryClient.set(event.getBootstrapContext().get(ZookeeperDiscoveryClient.class));
+                })).run();
 
-		ZookeeperDiscoveryClient discoveryClient = context.getBean(ZookeeperDiscoveryClient.class);
-		assertThat(discoveryClient == bootstrapDiscoveryClient.get()).isTrue();
-		assertThat(bindHandlerBootstrapper.onSuccessCount).isGreaterThan(0);
-	}
+        ZookeeperDiscoveryClient discoveryClient = context.getBean(ZookeeperDiscoveryClient.class);
+        assertThat(discoveryClient == bootstrapDiscoveryClient.get()).isTrue();
+        assertThat(bindHandlerBootstrapper.onSuccessCount).isGreaterThan(0);
+    }
 
-	@SpringBootConfiguration
-	@EnableAutoConfiguration
-	static class TestConfig {
+    @SpringBootConfiguration
+    @EnableAutoConfiguration
+    static class TestConfig {
 
-	}
-	static class BindHandlerBootstrapper implements BootstrapRegistryInitializer {
+    }
 
-		private int onSuccessCount = 0;
+    static class BindHandlerBootstrapper implements BootstrapRegistryInitializer {
 
-		@Override
-		public void initialize(BootstrapRegistry registry) {
-			registry.register(BindHandler.class, context -> new BindHandler() {
-				@Override
-				public Object onSuccess(ConfigurationPropertyName name, Bindable<?> target, BindContext context,
-						Object result) {
-					onSuccessCount++;
-					return result;
-				}
-			});
-		}
+        private int onSuccessCount = 0;
 
-	}
+        @Override
+        public void initialize(BootstrapRegistry registry) {
+            registry.register(BindHandler.class, context -> new BindHandler() {
+                @Override
+                public Object onSuccess(ConfigurationPropertyName name, Bindable<?> target, BindContext context,
+                                                                  Object result) {
+                    onSuccessCount++;
+                    return result;
+                }
+            });
+        }
+
+    }
 
 }

@@ -36,25 +36,25 @@ import org.springframework.test.context.junit4.SpringRunner;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = ZookeeperDiscoveryDisabledTests.SomeApp.class,
-		webEnvironment = WebEnvironment.RANDOM_PORT, properties = {
-		"spring.cloud.zookeeper.discovery.enabled=false", "debug=true" })
+        webEnvironment = WebEnvironment.RANDOM_PORT, properties = {
+        "spring.cloud.zookeeper.discovery.enabled=false", "debug=true"})
 @ContextConfiguration(loader = ZookeeperTestingServer.Loader.class)
 public class ZookeeperDiscoveryDisabledTests {
 
-	@Test
-	public void should_start_the_context_with_discovery_disabled() {
-	}
+    @Test
+    public void should_start_the_context_with_discovery_disabled() {
+    }
 
-	@Configuration
-	@EnableAutoConfiguration
-	@Import(CommonTestConfig.class)
-	static class SomeApp {
+    @Configuration
+    @EnableAutoConfiguration
+    @Import(CommonTestConfig.class)
+    static class SomeApp {
 
-		@Bean
-		CuratorFramework curator() {
-			return null;
-		}
+        @Bean
+        CuratorFramework curator() {
+            return null;
+        }
 
-	}
+    }
 
 }

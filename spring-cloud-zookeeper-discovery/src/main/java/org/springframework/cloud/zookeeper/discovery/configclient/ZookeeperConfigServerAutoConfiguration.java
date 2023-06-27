@@ -34,25 +34,25 @@ import org.springframework.util.StringUtils;
  */
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties
-@ConditionalOnClass({ ZookeeperDiscoveryProperties.class, CuratorFramework.class,
-		ConfigServerProperties.class })
+@ConditionalOnClass({ZookeeperDiscoveryProperties.class, CuratorFramework.class,
+        ConfigServerProperties.class})
 public class ZookeeperConfigServerAutoConfiguration {
 
-	@Autowired(required = false)
-	private ZookeeperDiscoveryProperties properties;
+    @Autowired(required = false)
+    private ZookeeperDiscoveryProperties properties;
 
-	@Autowired(required = false)
-	private ConfigServerProperties server;
+    @Autowired(required = false)
+    private ConfigServerProperties server;
 
-	@PostConstruct
-	public void init() {
-		if (this.properties == null || this.server == null) {
-			return;
-		}
-		String prefix = this.server.getPrefix();
-		if (StringUtils.hasText(prefix)) {
-			this.properties.getMetadata().put("configPath", prefix);
-		}
-	}
+    @PostConstruct
+    public void init() {
+        if (this.properties == null || this.server == null) {
+            return;
+        }
+        String prefix = this.server.getPrefix();
+        if (StringUtils.hasText(prefix)) {
+            this.properties.getMetadata().put("configPath", prefix);
+        }
+    }
 
 }

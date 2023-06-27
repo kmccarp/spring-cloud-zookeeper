@@ -31,69 +31,69 @@ import org.springframework.cloud.zookeeper.discovery.ZookeeperDiscoveryPropertie
  * @since 1.0.0
  */
 public class ZookeeperAutoServiceRegistration
-		extends AbstractAutoServiceRegistration<ZookeeperRegistration> {
+        extends AbstractAutoServiceRegistration<ZookeeperRegistration> {
 
-	private static final Log log = LogFactory
-			.getLog(ZookeeperAutoServiceRegistration.class);
+    private static final Log log = LogFactory
+            .getLog(ZookeeperAutoServiceRegistration.class);
 
-	private ZookeeperRegistration registration;
+    private ZookeeperRegistration registration;
 
-	private ZookeeperDiscoveryProperties properties;
+    private ZookeeperDiscoveryProperties properties;
 
-	public ZookeeperAutoServiceRegistration(ZookeeperServiceRegistry registry,
-			ZookeeperRegistration registration, ZookeeperDiscoveryProperties properties) {
-		this(registry, registration, properties, null);
-	}
+    public ZookeeperAutoServiceRegistration(ZookeeperServiceRegistry registry,
+                                             ZookeeperRegistration registration, ZookeeperDiscoveryProperties properties) {
+        this(registry, registration, properties, null);
+    }
 
-	public ZookeeperAutoServiceRegistration(ZookeeperServiceRegistry registry,
-			ZookeeperRegistration registration, ZookeeperDiscoveryProperties properties,
-			AutoServiceRegistrationProperties arProperties) {
-		super(registry, arProperties);
-		this.registration = registration;
-		this.properties = properties;
-		if (this.properties.getInstancePort() != null) {
-			this.registration.setPort(this.properties.getInstancePort());
-		}
-	}
+    public ZookeeperAutoServiceRegistration(ZookeeperServiceRegistry registry,
+                                             ZookeeperRegistration registration, ZookeeperDiscoveryProperties properties,
+                                             AutoServiceRegistrationProperties arProperties) {
+        super(registry, arProperties);
+        this.registration = registration;
+        this.properties = properties;
+        if (this.properties.getInstancePort() != null) {
+            this.registration.setPort(this.properties.getInstancePort());
+        }
+    }
 
-	@Override
-	protected ZookeeperRegistration getRegistration() {
-		return this.registration;
-	}
+    @Override
+    protected ZookeeperRegistration getRegistration() {
+        return this.registration;
+    }
 
-	@Override
-	protected ZookeeperRegistration getManagementRegistration() {
-		return null;
-	}
+    @Override
+    protected ZookeeperRegistration getManagementRegistration() {
+        return null;
+    }
 
-	@Override
-	protected void register() {
-		if (!this.properties.isRegister()) {
-			log.debug("Registration disabled.");
-			return;
-		}
-		if (this.registration.getPort() == 0) {
-			this.registration.setPort(getPort().get());
-		}
-		super.register();
-	}
+    @Override
+    protected void register() {
+        if (!this.properties.isRegister()) {
+            log.debug("Registration disabled.");
+            return;
+        }
+        if (this.registration.getPort() == 0) {
+            this.registration.setPort(getPort().get());
+        }
+        super.register();
+    }
 
-	@Override
-	protected void deregister() {
-		if (!this.properties.isRegister()) {
-			return;
-		}
-		super.deregister();
-	}
+    @Override
+    protected void deregister() {
+        if (!this.properties.isRegister()) {
+            return;
+        }
+        super.deregister();
+    }
 
-	@Override
-	protected boolean isEnabled() {
-		return this.properties.isEnabled();
-	}
+    @Override
+    protected boolean isEnabled() {
+        return this.properties.isEnabled();
+    }
 
-	@Override
-	protected Object getConfiguration() {
-		return this.properties;
-	}
+    @Override
+    protected Object getConfiguration() {
+        return this.properties;
+    }
 
 }

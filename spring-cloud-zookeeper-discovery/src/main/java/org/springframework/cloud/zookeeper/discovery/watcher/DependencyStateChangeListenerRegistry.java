@@ -34,45 +34,45 @@ import org.apache.curator.x.discovery.details.ServiceCacheListener;
  */
 public class DependencyStateChangeListenerRegistry implements ServiceCacheListener {
 
-	private static final Log log = LogFactory
-			.getLog(DependencyStateChangeListenerRegistry.class);
+    private static final Log log = LogFactory
+            .getLog(DependencyStateChangeListenerRegistry.class);
 
-	private final List<DependencyWatcherListener> listeners;
+    private final List<DependencyWatcherListener> listeners;
 
-	private final String dependencyName;
+    private final String dependencyName;
 
-	private final ServiceCache<?> serviceCache;
+    private final ServiceCache<?> serviceCache;
 
-	public DependencyStateChangeListenerRegistry(
-			List<DependencyWatcherListener> listeners, String dependencyName,
-			ServiceCache<?> serviceCache) {
-		this.listeners = listeners;
-		this.dependencyName = dependencyName;
-		this.serviceCache = serviceCache;
-	}
+    public DependencyStateChangeListenerRegistry(
+            List<DependencyWatcherListener> listeners, String dependencyName,
+            ServiceCache<?> serviceCache) {
+        this.listeners = listeners;
+        this.dependencyName = dependencyName;
+        this.serviceCache = serviceCache;
+    }
 
-	@Override
-	public void cacheChanged() {
-		DependencyState state = this.serviceCache.getInstances().isEmpty()
-				? DependencyState.DISCONNECTED : DependencyState.CONNECTED;
-		logCurrentState(state);
-		informListeners(state);
-	}
+    @Override
+    public void cacheChanged() {
+        DependencyState state = this.serviceCache.getInstances().isEmpty()
+                ? DependencyState.DISCONNECTED : DependencyState.CONNECTED;
+        logCurrentState(state);
+        informListeners(state);
+    }
 
-	private void logCurrentState(DependencyState dependencyState) {
-		log.info("Service cache state change for '" + this.dependencyName
-				+ "' instances, current service state: " + dependencyState);
-	}
+    private void logCurrentState(DependencyState dependencyState) {
+        log.info("Service cache state change for '" + this.dependencyName
+                + "' instances, current service state: " + dependencyState);
+    }
 
-	private void informListeners(DependencyState state) {
-		for (DependencyWatcherListener listener : this.listeners) {
-			listener.stateChanged(this.dependencyName, state);
-		}
-	}
+    private void informListeners(DependencyState state) {
+        for (DependencyWatcherListener listener : this.listeners) {
+            listener.stateChanged(this.dependencyName, state);
+        }
+    }
 
-	@Override
-	public void stateChanged(CuratorFramework client, ConnectionState newState) {
-		// TODO do something or ignore for what is worth
-	}
+    @Override
+    public void stateChanged(CuratorFramework client, ConnectionState newState) {
+        // TODO do something or ignore for what is worth
+    }
 
 }

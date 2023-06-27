@@ -49,26 +49,26 @@ import org.springframework.context.annotation.Configuration;
 @ConditionalOnDiscoveryEnabled
 @ConditionalOnReactiveDiscoveryEnabled
 @ConditionalOnZookeeperDiscoveryEnabled
-@AutoConfigureAfter({ ReactiveCompositeDiscoveryClientAutoConfiguration.class, ZookeeperAutoConfiguration.class})
+@AutoConfigureAfter({ReactiveCompositeDiscoveryClientAutoConfiguration.class, ZookeeperAutoConfiguration.class})
 @AutoConfigureBefore(ReactiveCommonsClientAutoConfiguration.class)
 public class ZookeeperReactiveDiscoveryClientConfiguration {
 
-	@Autowired(required = false)
-	private ZookeeperDependencies zookeeperDependencies;
+    @Autowired(required = false)
+    private ZookeeperDependencies zookeeperDependencies;
 
-	@Bean
-	@ConditionalOnMissingBean
-	public ZookeeperReactiveDiscoveryClient zookeeperReactiveDiscoveryClient(ServiceDiscovery<ZookeeperInstance> serviceDiscovery,
-			ZookeeperDiscoveryProperties zookeeperDiscoveryProperties) {
-		return new ZookeeperReactiveDiscoveryClient(serviceDiscovery, zookeeperDependencies, zookeeperDiscoveryProperties);
-	}
+    @Bean
+    @ConditionalOnMissingBean
+    public ZookeeperReactiveDiscoveryClient zookeeperReactiveDiscoveryClient(ServiceDiscovery<ZookeeperInstance> serviceDiscovery,
+                                                                                                                      ZookeeperDiscoveryProperties zookeeperDiscoveryProperties) {
+        return new ZookeeperReactiveDiscoveryClient(serviceDiscovery, zookeeperDependencies, zookeeperDiscoveryProperties);
+    }
 
-	@Bean
-	@ConditionalOnClass(name = "org.springframework.boot.actuate.health.ReactiveHealthIndicator")
-	@ConditionalOnDiscoveryHealthIndicatorEnabled
-	public ReactiveDiscoveryClientHealthIndicator zookeeperReactiveDiscoveryClientHealthIndicator(
-			ZookeeperReactiveDiscoveryClient client,
-			DiscoveryClientHealthIndicatorProperties properties) {
-		return new ReactiveDiscoveryClientHealthIndicator(client, properties);
-	}
+    @Bean
+    @ConditionalOnClass(name = "org.springframework.boot.actuate.health.ReactiveHealthIndicator")
+    @ConditionalOnDiscoveryHealthIndicatorEnabled
+    public ReactiveDiscoveryClientHealthIndicator zookeeperReactiveDiscoveryClientHealthIndicator(
+            ZookeeperReactiveDiscoveryClient client,
+            DiscoveryClientHealthIndicatorProperties properties) {
+        return new ReactiveDiscoveryClientHealthIndicator(client, properties);
+    }
 }

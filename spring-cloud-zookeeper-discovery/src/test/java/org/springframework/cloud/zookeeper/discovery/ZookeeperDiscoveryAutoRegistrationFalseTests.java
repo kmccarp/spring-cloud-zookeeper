@@ -46,44 +46,44 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = ZookeeperDiscoveryAutoRegistrationFalseTests.Config.class, properties = {
-		"spring.application.name=testzkautoregfalse",
-		"debug=true" }, webEnvironment = RANDOM_PORT)
+        "spring.application.name=testzkautoregfalse",
+        "debug=true"}, webEnvironment = RANDOM_PORT)
 @ContextConfiguration(loader = ZookeeperTestingServer.Loader.class)
 @DirtiesContext
 public class ZookeeperDiscoveryAutoRegistrationFalseTests {
 
-	@Autowired
-	DiscoveryClient discoveryClient;
+    @Autowired
+    DiscoveryClient discoveryClient;
 
-	@Value("${spring.application.name}")
-	String springAppName;
+    @Value("${spring.application.name}")
+    String springAppName;
 
-	@Test
-	public void discovery_client_is_zookeeper() {
-		// given: this.discoveryClient
-		// expect:
-		then(discoveryClient).isInstanceOf(CompositeDiscoveryClient.class);
-		CompositeDiscoveryClient composite = (CompositeDiscoveryClient) discoveryClient;
-		List<DiscoveryClient> discoveryClients = composite.getDiscoveryClients();
-		DiscoveryClient first = discoveryClients.get(0);
-		then(first).isInstanceOf(ZookeeperDiscoveryClient.class);
-	}
+    @Test
+    public void discovery_client_is_zookeeper() {
+        // given: this.discoveryClient
+        // expect:
+        then(discoveryClient).isInstanceOf(CompositeDiscoveryClient.class);
+        CompositeDiscoveryClient composite = (CompositeDiscoveryClient)discoveryClient;
+        List<DiscoveryClient> discoveryClients = composite.getDiscoveryClients();
+        DiscoveryClient first = discoveryClients.get(0);
+        then(first).isInstanceOf(ZookeeperDiscoveryClient.class);
+    }
 
-	@Test
-	public void application_should_not_have_been_registered() {
-		// given:
-		List<ServiceInstance> instances = this.discoveryClient
-				.getInstances(springAppName);
-		// expect:
-		then(instances).isEmpty();
-	}
+    @Test
+    public void application_should_not_have_been_registered() {
+        // given:
+        List<ServiceInstance> instances = this.discoveryClient
+                .getInstances(springAppName);
+        // expect:
+        then(instances).isEmpty();
+    }
 
-	@Configuration
-	@EnableAutoConfiguration
-	@Import(CommonTestConfig.class)
-	@EnableDiscoveryClient(autoRegister = false)
-	static class Config {
+    @Configuration
+    @EnableAutoConfiguration
+    @Import(CommonTestConfig.class)
+    @EnableDiscoveryClient(autoRegister = false)
+    static class Config {
 
-	}
+    }
 
 }

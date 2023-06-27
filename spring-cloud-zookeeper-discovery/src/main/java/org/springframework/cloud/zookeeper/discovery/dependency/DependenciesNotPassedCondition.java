@@ -28,11 +28,11 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
  */
 public class DependenciesNotPassedCondition extends DependenciesPassedCondition {
 
-	@Override
-	public ConditionOutcome getMatchOutcome(ConditionContext context,
-			AnnotatedTypeMetadata metadata) {
-		ConditionOutcome propertiesSet = super.getMatchOutcome(context, metadata);
-		return ConditionOutcome.inverse(propertiesSet);
-	}
+    @Override
+    public ConditionOutcome getMatchOutcome(ConditionContext context,
+                                                           AnnotatedTypeMetadata metadata) {
+        ConditionOutcome propertiesSet = super.getMatchOutcome(context, metadata);
+        return ConditionOutcome.inverse(propertiesSet);
+    }
 
 }

@@ -25,10 +25,10 @@ package org.springframework.cloud.zookeeper.discovery.watcher.presence;
  * @version 1.0.0
  */
 public class DefaultDependencyPresenceOnStartupVerifier
-		extends DependencyPresenceOnStartupVerifier {
+        extends DependencyPresenceOnStartupVerifier {
 
-	public DefaultDependencyPresenceOnStartupVerifier() {
-		super(new LogMissingDependencyChecker());
-	}
+    public DefaultDependencyPresenceOnStartupVerifier() {
+        super(new LogMissingDependencyChecker());
+    }
 
 }

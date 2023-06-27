@@ -26,51 +26,51 @@ import org.apache.curator.x.discovery.UriSpec;
 
 public class TestServiceRegistrar {
 
-	private final int serverPort;
+    private final int serverPort;
 
-	private final CuratorFramework curatorFramework;
+    private final CuratorFramework curatorFramework;
 
-	private final ServiceDiscovery serviceDiscovery;
+    private final ServiceDiscovery serviceDiscovery;
 
-	public TestServiceRegistrar(int serverPort, CuratorFramework curatorFramework) {
-		this.serverPort = serverPort;
-		this.curatorFramework = curatorFramework;
-		this.serviceDiscovery = serviceDiscovery();
-	}
+    public TestServiceRegistrar(int serverPort, CuratorFramework curatorFramework) {
+        this.serverPort = serverPort;
+        this.curatorFramework = curatorFramework;
+        this.serviceDiscovery = serviceDiscovery();
+    }
 
-	public void start() {
-		try {
-			this.serviceDiscovery.start();
-		}
-		catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
+    public void start() {
+        try {
+            this.serviceDiscovery.start();
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-	public ServiceInstance serviceInstance() {
-		try {
-			return ServiceInstance.builder()
-					.uriSpec(new UriSpec("{scheme}://{address}:{port}/"))
-					.address("localhost").port(this.serverPort).name("testInstance")
-					.build();
-		}
-		catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
+    public ServiceInstance serviceInstance() {
+        try {
+            return ServiceInstance.builder()
+                    .uriSpec(new UriSpec("{scheme}://{address}:{port}/"))
+                    .address("localhost").port(this.serverPort).name("testInstance")
+                    .build();
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-	public ServiceDiscovery serviceDiscovery() {
-		return ServiceDiscoveryBuilder.builder(Void.class).basePath("/services")
-				.client(this.curatorFramework).thisInstance(serviceInstance()).build();
-	}
+    public ServiceDiscovery serviceDiscovery() {
+        return ServiceDiscoveryBuilder.builder(Void.class).basePath("/services")
+                .client(this.curatorFramework).thisInstance(serviceInstance()).build();
+    }
 
-	public void stop() {
-		try {
-			this.serviceDiscovery.close();
-		}
-		catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-	}
+    public void stop() {
+        try {
+            this.serviceDiscovery.close();
+        }
+        catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 }

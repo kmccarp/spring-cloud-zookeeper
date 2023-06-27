@@ -32,26 +32,25 @@ import org.apache.curator.x.discovery.ServiceCache;
  */
 public abstract class DependencyPresenceOnStartupVerifier {
 
-	private static final PresenceChecker MANDATORY_DEPENDENCY_CHECKER = new FailOnMissingDependencyChecker();
+    private static final PresenceChecker MANDATORY_DEPENDENCY_CHECKER = new FailOnMissingDependencyChecker();
 
-	private final PresenceChecker optionalDependencyChecker;
+    private final PresenceChecker optionalDependencyChecker;
 
-	public DependencyPresenceOnStartupVerifier(
-			PresenceChecker optionalDependencyChecker) {
-		this.optionalDependencyChecker = optionalDependencyChecker;
-	}
+    public DependencyPresenceOnStartupVerifier(
+            PresenceChecker optionalDependencyChecker) {
+        this.optionalDependencyChecker = optionalDependencyChecker;
+    }
 
-	@SuppressWarnings("unchecked")
-	public void verifyDependencyPresence(String dependencyName,
-			@SuppressWarnings("rawtypes") ServiceCache serviceCache, boolean required) {
-		if (required) {
-			MANDATORY_DEPENDENCY_CHECKER.checkPresence(dependencyName,
-					serviceCache.getInstances());
-		}
-		else {
-			this.optionalDependencyChecker.checkPresence(dependencyName,
-					serviceCache.getInstances());
-		}
-	}
+    @SuppressWarnings("unchecked")
+    public void verifyDependencyPresence(String dependencyName,
+                                                                             @SuppressWarnings("rawtypes") ServiceCache serviceCache, boolean required) {
+        if (required) {
+            MANDATORY_DEPENDENCY_CHECKER.checkPresence(dependencyName,
+                    serviceCache.getInstances());
+        } else {
+            this.optionalDependencyChecker.checkPresence(dependencyName,
+                    serviceCache.getInstances());
+        }
+    }
 
 }
