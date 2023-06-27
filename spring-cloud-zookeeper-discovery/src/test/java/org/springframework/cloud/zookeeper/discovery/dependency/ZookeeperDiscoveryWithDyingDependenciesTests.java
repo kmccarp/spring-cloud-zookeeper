@@ -84,20 +84,17 @@ public class ZookeeperDiscoveryWithDyingDependenciesTests {
 	private Callable<Boolean> applicationHasStartedOnANewPort(
 			final ConfigurableApplicationContext clientContext,
 			final Integer serverPortBeforeDying) {
-		return new Callable<Boolean>() {
-			@Override
-			public Boolean call() throws Exception {
-				try {
-					BDDAssertions.then(callServiceAtPortEndpoint(clientContext))
-							.isNotEqualTo(serverPortBeforeDying);
-				}
-				catch (Exception e) {
-					log.error("Exception occurred while trying to call the server", e);
-					return false;
-				}
-				return true;
-			}
-		};
+		return () -> {
+            try {
+                BDDAssertions.then(callServiceAtPortEndpoint(clientContext))
+                        .isNotEqualTo(serverPortBeforeDying);
+            }
+            catch (Exception e) {
+                log.error("Exception occurred while trying to call the server", e);
+                return false;
+            }
+            return true;
+        };
 	}
 
 	private void close(Closeable closeable) throws IOException {

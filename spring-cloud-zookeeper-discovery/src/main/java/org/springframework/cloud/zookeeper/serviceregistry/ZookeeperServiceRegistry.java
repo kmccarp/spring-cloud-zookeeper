@@ -46,8 +46,8 @@ public class ZookeeperServiceRegistry implements ServiceRegistry<ZookeeperRegist
 
 	protected ZookeeperDiscoveryProperties properties;
 
-	// protected InstanceSerializer<ZookeeperInstance> instanceSerializer;
-	private ServiceDiscovery<ZookeeperInstance> serviceDiscovery;
+    // protected InstanceSerializer<ZookeeperInstance> instanceSerializer;
+    private final ServiceDiscovery<ZookeeperInstance> serviceDiscovery;
 
 	public ZookeeperServiceRegistry(
 			ServiceDiscovery<ZookeeperInstance> serviceDiscovery) {

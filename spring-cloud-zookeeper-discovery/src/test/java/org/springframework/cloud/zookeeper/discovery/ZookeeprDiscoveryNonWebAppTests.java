@@ -77,23 +77,20 @@ public class ZookeeprDiscoveryNonWebAppTests {
 			try (ConfigurableApplicationContext context = clientApplication.run(
 					this.connectionString,
 					"--spring.cloud.zookeeper.discovery.register=false")) {
-				Awaitility.await().until(new Runnable() {
-					@Override
-					public void run() {
-						try {
-							HelloClient bean = context.getBean(HelloClient.class);
-							then(bean.discoveryClient.getServices()).isNotEmpty();
-							then(bean.discoveryClient.getInstances("hello-world"))
-									.isNotEmpty();
-							String string = bean.restTemplate
-									.getForObject("http://hello-world/", String.class);
-							then(string).isEqualTo("foo");
-						}
-						catch (IllegalStateException e) {
-							throw new AssertionError(e);
-						}
-					}
-				});
+				Awaitility.await().until(() -> {
+                    try {
+                        HelloClient bean = context.getBean(HelloClient.class);
+                        then(bean.discoveryClient.getServices()).isNotEmpty();
+                        then(bean.discoveryClient.getInstances("hello-world"))
+                                .isNotEmpty();
+                        String string = bean.restTemplate
+                                .getForObject("http://hello-world/", String.class);
+                        then(string).isEqualTo("foo");
+                    }
+                    catch (IllegalStateException e) {
+                        throw new AssertionError(e);
+                    }
+                });
 			}
 		}
 	}
