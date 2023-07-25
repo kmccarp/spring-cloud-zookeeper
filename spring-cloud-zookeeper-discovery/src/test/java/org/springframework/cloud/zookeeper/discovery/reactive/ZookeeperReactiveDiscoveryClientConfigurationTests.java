@@ -40,15 +40,15 @@ import static org.mockito.Mockito.mock;
  */
 class ZookeeperReactiveDiscoveryClientConfigurationTests {
 
-	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withInitializer(new ZookeeperTestingServer.Initializer())
-			.withConfiguration(
-					AutoConfigurations.of(UtilAutoConfiguration.class,
-							ReactiveCommonsClientAutoConfiguration.class,
-							CuratorServiceDiscoveryAutoConfiguration.class,
-							ZookeeperDiscoveryAutoConfiguration.class,
-							ZookeeperReactiveDiscoveryClientConfiguration.class))
-			.withUserConfiguration(MockedZookeeperConfiguration.class);
+    private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+            .withInitializer(new ZookeeperTestingServer.Initializer())
+            .withConfiguration(
+                    AutoConfigurations.of(UtilAutoConfiguration.class,
+                            ReactiveCommonsClientAutoConfiguration.class,
+                            CuratorServiceDiscoveryAutoConfiguration.class,
+                            ZookeeperDiscoveryAutoConfiguration.class,
+                            ZookeeperReactiveDiscoveryClientConfiguration.class))
+            .withUserConfiguration(MockedZookeeperConfiguration.class);
 
 	@Test
 	public void shouldWorkWithDefaults() {
