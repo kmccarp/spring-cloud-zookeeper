@@ -38,8 +38,8 @@ import org.springframework.util.StringUtils;
 public class DependencyEnvironmentPostProcessor
 		implements EnvironmentPostProcessor, Ordered {
 
-	// after ConfigFileEnvironmentPostProcessorr
-	private int order = BootstrapConfigFileApplicationListener.DEFAULT_ORDER + 1;
+    // after ConfigFileEnvironmentPostProcessorr
+    private final int order = BootstrapConfigFileApplicationListener.DEFAULT_ORDER + 1;
 
 	@Override
 	public int getOrder() {
